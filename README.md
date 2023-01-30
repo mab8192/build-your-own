@@ -1,2 +1,4 @@
 # build-your-own
-Collection of some cool technologies recreated by me from scratch
+A collection of some cool technologies recreated by me.
+
+Ideas from: https://github.com/codecrafters-io/build-your-own-x
