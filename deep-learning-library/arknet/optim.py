@@ -19,7 +19,7 @@ class SGD(Optimizer):
         self.lr = lr
 
     def step(self, net: NeuralNet) -> None:
-        for param, grad in net.params_and_grads():
+        for name, param, grad in net.params_and_grads():
             param -= self.lr * grad
 
 
@@ -39,9 +39,9 @@ class Adam(Optimizer):
         self.t = 1
 
     def step(self, net):
-        for param, grad in net.params_and_grads():
-            if len(param.shape) > 1:
-                # Weights (n, m) matrix
+        for name, param, grad in net.params_and_grads():
+            if name == "w":
+                # Weights
                 self.m_w = self.beta1 * self.m_w + (1 - self.beta1) * grad
                 self.v_w = self.beta2 * self.v_w + (1 - self.beta2) * (grad**2)
 
@@ -49,8 +49,8 @@ class Adam(Optimizer):
                 v_corr = self.v_w / (1 - self.beta2**self.t)
 
                 param -= self.lr*(m_corr / (np.sqrt(v_corr) + self.eps))
-            else:
-                # Biases (m,) matrix
+            elif name == "b":
+                # Biases
                 self.m_b = self.beta1 * self.m_b + (1 - self.beta1) * grad
                 self.v_b = self.beta2 * self.v_b + (1 - self.beta2) * (grad**2)
 
