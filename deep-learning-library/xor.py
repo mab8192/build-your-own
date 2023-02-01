@@ -5,7 +5,7 @@ import numpy as np
 
 from arknet.train import train, seed_everything
 from arknet.nn import NeuralNet
-from arknet.layers import Linear, Tanh, ReLU
+from arknet.layers import Linear, ReLU
 from arknet import optim
 
 inputs = np.array([

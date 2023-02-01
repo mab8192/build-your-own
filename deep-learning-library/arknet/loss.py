@@ -20,3 +20,11 @@ class MSELoss(Loss):
 
     def grad(self, predictions: Tensor, expected: Tensor) -> Tensor:
         return 2 * (predictions - expected)
+
+
+class CrossEntropyLoss(Loss):
+    def loss(self, predictions: Tensor, expected: Tensor) -> float:
+        return -np.sum(expected * np.log(predictions))
+
+    def grad(self, predictions: Tensor, expected: Tensor) -> float:
+        return predictions - expected

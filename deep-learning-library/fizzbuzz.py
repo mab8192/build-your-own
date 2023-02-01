@@ -11,7 +11,7 @@ from typing import List
 
 import numpy as np
 
-from arknet.train import train
+from arknet.train import train, seed_everything
 from arknet.nn import NeuralNet
 from arknet.layers import Linear, Tanh
 from arknet.optim import SGD
@@ -42,6 +42,8 @@ targets = np.array([
     fizz_buzz_encode(x)
     for x in range(101, 1024)
 ])
+
+seed_everything(42)
 
 net = NeuralNet([
     Linear(10, 50),
