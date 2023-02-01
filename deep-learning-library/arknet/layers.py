@@ -87,3 +87,22 @@ def tanh_prime(x: Tensor) -> Tensor:
 class Tanh(Activation):
     def __init__(self) -> None:
         super().__init__(tanh, tanh_prime)
+
+
+def relu(x: Tensor) -> Tensor:
+    return np.maximum(x, 0)
+
+
+def relu_prime(x: Tensor) -> Tensor:
+    """
+    f(x) = max(x, 0)
+    f'(x) = 1 if x > 0, 0 otherwise
+    """
+    r = np.zeros_like(x)
+    r[x > 0] = 1
+    return r
+
+
+class ReLU(Activation):
+    def __init__(self) -> None:
+        super().__init__(relu, relu_prime)

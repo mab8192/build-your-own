@@ -3,9 +3,10 @@ Canonical example of a function that cannot be learned with a linear model is XO
 """
 import numpy as np
 
-from arknet.train import train
+from arknet.train import train, seed_everything
 from arknet.nn import NeuralNet
-from arknet.layers import Linear, Tanh
+from arknet.layers import Linear, Tanh, ReLU
+from arknet import optim
 
 inputs = np.array([
     [0, 0],
@@ -35,13 +36,18 @@ for x, y in zip(inputs, targets):
     print(x, pred, y)
 """
 
+seed_everything(42)
+
 net = NeuralNet([
     Linear(2, 2),
-    Tanh(),
+    ReLU(),
     Linear(2, 2)
 ])
 
-train(net, inputs, targets)
+
+train(net, inputs, targets,
+      optimizer=optim.Adam(lr=0.01),
+      log_every=500)
 
 for x, y in zip(inputs, targets):
     pred = net.forward(x)
