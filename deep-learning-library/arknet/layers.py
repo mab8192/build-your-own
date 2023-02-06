@@ -75,6 +75,7 @@ class Activation(Layer):
         return self.f_prime(self.inputs) * grad
 
 
+# ------------------ Hyperbolic Tangent ------------------
 def tanh(x: Tensor) -> Tensor:
     return np.tanh(x)
 
@@ -89,6 +90,7 @@ class Tanh(Activation):
         super().__init__(tanh, tanh_prime)
 
 
+# ------------------ Rectified Linear Unit (ReLU) ------------------
 def relu(x: Tensor) -> Tensor:
     return np.maximum(x, 0)
 
@@ -106,3 +108,19 @@ def relu_prime(x: Tensor) -> Tensor:
 class ReLU(Activation):
     def __init__(self) -> None:
         super().__init__(relu, relu_prime)
+
+
+# ------------------ Softmax ------------------
+"""
+def softmax(x: Tensor) -> Tensor:
+    exp = np.exp(x - np.max(x))
+    return exp / np.sum(exp, axis=1, keepdims=True)
+
+
+def softmax_prime(x: Tensor) -> Tensor:
+    s = softmax(x)
+    t1 = np.einsum('ij,jk->ijk', s, np.eye(s.shape[-1]))
+    t2 = np.einsum('ij,ik->ijk', s, s)
+    jac = t1-t2
+    return jac
+"""
