@@ -45,6 +45,7 @@ enum ExecuteResult {
 };
 
 // forward declarations for objects
+// TODO: move these to their own files
 struct Row;
 struct Statement;
 struct Table;
