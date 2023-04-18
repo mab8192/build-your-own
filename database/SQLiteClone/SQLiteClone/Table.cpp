@@ -6,50 +6,17 @@ Table::Table(std::string filepath) {
 }
 
 Table::~Table() {
-	// flush contents to disk
-	unsigned int num_full_pages = num_rows / ROWS_PER_PAGE;
-	for (int i = 0; i < num_full_pages; i++) {
-		if (pager->pages[i] == nullptr) continue;
-		pager->flush(i, PAGE_SIZE);
-		free(pager->pages[i]);
-		pager->pages[i] = nullptr;
-	}
-
-	unsigned int num_additional_rows = num_rows % ROWS_PER_PAGE;
-	if (num_additional_rows > 0) {
-		unsigned int page_num = num_full_pages;
-		if (pager->pages[page_num] != nullptr) {
-			pager->flush(page_num, num_additional_rows * ROW_SIZE);
-			free(pager->pages[page_num]);
-			pager->pages[page_num] = nullptr;
-		}
-	}
-
-	pager->file_stream.close();
-	if (pager->file_stream.fail()) {
-		printf("Failed to close file!\n");
-		exit(EXIT_FAILURE);
-	}
-
-	for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++) {
-		byte* page = pager->pages[i];
-		if (page) {
-			free(page);
-			pager->pages[i] = nullptr;
-		}
-	}
-
 	delete pager;
 }
 
 byte* Table::row_slot(unsigned int row_num) {
 	unsigned int page_num = row_num / ROWS_PER_PAGE;
 
-	byte* page = pager->get_page(page_num);
+	Page* page = pager->get_page(page_num);
 
 	unsigned int row_offset = row_num % ROWS_PER_PAGE;
 	unsigned int byte_offset = row_offset * ROW_SIZE;
-	return page + byte_offset;
+	return page->data + byte_offset;
 }
 
 ExecuteResult Table::insert(const Statement& statement) {
@@ -70,4 +37,10 @@ ExecuteResult Table::select(const Statement& statement) {
 		row->print();
 	}
 	return EXECUTE_SUCCESS;
+}
+
+
+void Table::close() {
+	// flush contents to disk
+	pager->close(num_rows);
 }

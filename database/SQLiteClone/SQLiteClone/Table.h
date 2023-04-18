@@ -13,4 +13,6 @@ struct Table {
 	byte* row_slot(unsigned int row_num);
 	ExecuteResult insert(const Statement& statement);
 	ExecuteResult select(const Statement& statement);
+
+	void close();
 };

@@ -11,9 +11,9 @@ void print_prompt() {
 	std::cout << "db > ";
 }
 
-MetaCommandResult do_meta_command(const std::string& cmd, const Table& table) {
+MetaCommandResult do_meta_command(const std::string& cmd, Table& table) {
 	if (cmd == ".exit") {
-		table.~Table();
+		table.close();
 		exit(EXIT_SUCCESS);
 	}
 	else {
