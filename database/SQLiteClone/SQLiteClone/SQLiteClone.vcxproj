@@ -128,6 +128,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="db.cpp" />
+    <ClCompile Include="Pager.cpp" />
+    <ClCompile Include="Row.cpp" />
+    <ClCompile Include="Statement.cpp" />
+    <ClCompile Include="Table.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Pager.h" />
+    <ClInclude Include="Row.h" />
+    <ClInclude Include="Statement.h" />
+    <ClInclude Include="util.h" />
+    <ClInclude Include="Table.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
