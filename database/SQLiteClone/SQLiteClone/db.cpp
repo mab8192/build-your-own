@@ -46,7 +46,6 @@ int main(int argc, char* argv[]) {
 		if (cmd[0] == '.') {
 			switch (do_meta_command(cmd, table)) {
 			case (META_COMMAND_SUCCESS):
-
 				continue;
 			case (META_COMMAND_UNRECOGNIZED_COMMAND):
 				std::cout << "Unrecognized command: " << cmd << std::endl;
