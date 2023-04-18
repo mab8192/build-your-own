@@ -4,6 +4,7 @@
 
 #include "Table.h"
 #include "util.h"
+#include "Cursor.h"
 
 
 // Helper functions
@@ -11,9 +12,9 @@ void print_prompt() {
 	std::cout << "db > ";
 }
 
-MetaCommandResult do_meta_command(const std::string& cmd, Table& table) {
+MetaCommandResult do_meta_command(Table* table, const std::string& cmd) {
 	if (cmd == ".exit") {
-		table.close();
+		table->close();
 		exit(EXIT_SUCCESS);
 	}
 	else {
@@ -21,20 +22,45 @@ MetaCommandResult do_meta_command(const std::string& cmd, Table& table) {
 	}
 }
 
-ExecuteResult execute_statement(const Statement& statement, Table& table) {
+// These functions are essentially the virtual machine
+ExecuteResult execute_insert(Table* table, const Statement& statement) {
+	if (table->num_rows >= TABLE_MAX_ROWS)
+		return EXECUTE_TABLE_FULL;
+
+	Cursor cursor(table, true);
+
+	statement.row_to_insert->serialize(cursor.value());
+
+	table->num_rows++;
+
+	return EXECUTE_SUCCESS;
+}
+
+ExecuteResult execute_select(Table* table, const Statement& statement) {
+	Row* row;
+	Cursor cursor(table);
+	while (!cursor.end_of_table) {
+		row = Row::deserialize(cursor.value());
+		row->print();
+		cursor.advance();
+	}
+	return EXECUTE_SUCCESS;
+}
+
+ExecuteResult execute_statement(Table* table, const Statement& statement) {
 	switch (statement.type) {
 	case STATEMENT_UNKNOWN:
 		std::cerr << "Unknown statement type!" << std::endl;
 		return EXECUTE_ERROR;
 	case STATEMENT_INSERT:
-		return table.insert(statement);
+		return execute_insert(table, statement);
 	case STATEMENT_SELECT:
-		return table.select(statement);
+		return execute_select(table, statement);
 	}
 }
 
 int main(int argc, char* argv[]) {
-	Table table("db.bin");
+	Table* table = new Table("db.bin");
 
 	while (true) {
 		print_prompt();
@@ -44,7 +70,7 @@ int main(int argc, char* argv[]) {
 		std::getline(std::cin, cmd);
 
 		if (cmd[0] == '.') {
-			switch (do_meta_command(cmd, table)) {
+			switch (do_meta_command(table, cmd)) {
 			case (META_COMMAND_SUCCESS):
 				continue;
 			case (META_COMMAND_UNRECOGNIZED_COMMAND):
@@ -69,7 +95,7 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 
-		switch (execute_statement(statement, table)) {
+		switch (execute_statement(table, statement)) {
 		case EXECUTE_SUCCESS:
 			std::cout << "Done." << std::endl;
 			break;
