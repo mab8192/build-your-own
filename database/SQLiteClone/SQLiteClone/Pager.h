@@ -11,7 +11,6 @@ struct Pager
 	Page* pages[TABLE_MAX_PAGES]{ nullptr };
 
 	Pager(std::string filepath);
-	// no destructor, pages are freed manually by the table. (ew)
 
 	Page* get_page(unsigned int page_num);
 	void flush(unsigned int i, unsigned int size);

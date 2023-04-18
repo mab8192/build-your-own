@@ -33,7 +33,7 @@ Page* Pager::get_page(unsigned int page_num) {
 	}
 
 	if (pages[page_num] == nullptr) {
-		// cache miss
+		// cache miss, allocate another page
 		Page* page = new Page();
 		unsigned int num_pages = file_length / PAGE_SIZE;
 
