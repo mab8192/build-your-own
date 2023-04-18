@@ -11,8 +11,9 @@ void print_prompt() {
 	std::cout << "db > ";
 }
 
-MetaCommandResult do_meta_command(const std::string& cmd) {
+MetaCommandResult do_meta_command(const std::string& cmd, const Table& table) {
 	if (cmd == ".exit") {
+		table.~Table();
 		exit(EXIT_SUCCESS);
 	}
 	else {
@@ -33,7 +34,7 @@ ExecuteResult execute_statement(const Statement& statement, Table& table) {
 }
 
 int main(int argc, char* argv[]) {
-	Table table;
+	Table table("db.bin");
 
 	while (true) {
 		print_prompt();
@@ -43,7 +44,7 @@ int main(int argc, char* argv[]) {
 		std::getline(std::cin, cmd);
 
 		if (cmd[0] == '.') {
-			switch (do_meta_command(cmd)) {
+			switch (do_meta_command(cmd, table)) {
 			case (META_COMMAND_SUCCESS):
 
 				continue;
