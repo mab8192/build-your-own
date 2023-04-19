@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BTree.cpp" />
     <ClCompile Include="Cursor.cpp" />
     <ClCompile Include="db.cpp" />
     <ClCompile Include="Pager.cpp" />
@@ -135,6 +136,7 @@
     <ClCompile Include="Table.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BTree.h" />
     <ClInclude Include="Cursor.h" />
     <ClInclude Include="Page.h" />
     <ClInclude Include="Pager.h" />
