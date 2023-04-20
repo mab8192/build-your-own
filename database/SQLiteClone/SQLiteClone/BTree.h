@@ -8,11 +8,6 @@ struct Node {
 	Node* parent;
 };
 
-struct InternalNode : Node {
-	
-
-};
-
 struct Cell {
 	unsigned int key;
 	byte value[ROW_SIZE];
@@ -23,10 +18,5 @@ struct LeafNode : Node {
 	Cell cells[LEAF_NODE_MAX_CELLS];
 
 	unsigned int get_key(unsigned int cell_num) const;
-	byte* get_value(unsigned int cell_num) const;
-};
-
-
-class BTree
-{
+	byte* get_value(unsigned int cell_num);
 };
