@@ -1,3 +1,3 @@
 # Database
 
-A simple database built with C.
+A barebones SQLite clone built in both C++ and Java.

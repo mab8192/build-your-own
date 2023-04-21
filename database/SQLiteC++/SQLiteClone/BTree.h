@@ -1,7 +1,7 @@
 #pragma once
 #include "util.h"
 
-const unsigned int LEAF_NODE_MAX_CELLS = 12;
+const unsigned int LEAF_NODE_MAX_CELLS = 13;
 
 struct Node {
 	bool is_root;
