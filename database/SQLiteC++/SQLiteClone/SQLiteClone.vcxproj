@@ -127,27 +127,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="backend\BTree.cpp" />
-    <ClCompile Include="data\Cursor.cpp" />
-    <ClCompile Include="db.cpp" />
-    <ClCompile Include="backend\Pager.cpp" />
-    <ClCompile Include="core\Parser.cpp" />
-    <ClCompile Include="data\Row.cpp" />
-    <ClCompile Include="data\Statement.cpp" />
-    <ClCompile Include="data\Table.cpp" />
-    <ClCompile Include="core\VirtualMachine.cpp" />
+    <ClCompile Include="backend.cpp" />
+    <ClCompile Include="core.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Table.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="backend\BTree.h" />
-    <ClInclude Include="data\Cursor.h" />
-    <ClInclude Include="backend\Page.h" />
-    <ClInclude Include="backend\Pager.h" />
-    <ClInclude Include="core\Parser.h" />
-    <ClInclude Include="data\Row.h" />
-    <ClInclude Include="data\Statement.h" />
-    <ClInclude Include="utils\util.h" />
-    <ClInclude Include="data\Table.h" />
-    <ClInclude Include="core\VirtualMachine.h" />
+    <ClInclude Include="backend.h" />
+    <ClInclude Include="core.h" />
+    <ClInclude Include="Table.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

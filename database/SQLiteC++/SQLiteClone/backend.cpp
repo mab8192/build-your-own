@@ -1,7 +1,5 @@
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include "Pager.h"
+#include "backend.h"
+
 
 Pager::Pager(std::string filepath) {
 	// This creates the file if it doesn't already exist by opening it in append mode
@@ -85,7 +83,7 @@ void Pager::flush(unsigned int page_num, unsigned int size) {
 
 void Pager::close(unsigned int num_rows) {
 	unsigned int num_full_pages = num_rows / ROWS_PER_PAGE;
-	for (int i = 0; i < num_full_pages; i++) {
+	for (unsigned int i = 0; i < num_full_pages; i++) {
 		if (pages[i] == nullptr) continue;
 		flush(i, PAGE_SIZE);
 		delete pages[i];
@@ -109,7 +107,7 @@ void Pager::close(unsigned int num_rows) {
 	}
 
 	// delete remaining pages, if any
-	for (uint32_t i = 0; i < TABLE_MAX_PAGES; i++) {
+	for (unsigned int i = 0; i < TABLE_MAX_PAGES; i++) {
 		Page* page = pages[i];
 		if (page != nullptr) {
 			delete page;

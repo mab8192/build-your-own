@@ -1,8 +1,16 @@
+// Defines the B-Tree and pager used by the system to index pages of memory and interface with the filesystem
 #pragma once
-#include <string>
+
 #include <fstream>
-#include "../utils/util.h"
-#include "Page.h"
+#include <string>
+
+#include "util.h"
+
+using std::string;
+
+struct Page {
+	byte data[PAGE_SIZE];
+};
 
 struct Pager
 {
@@ -10,7 +18,7 @@ struct Pager
 	unsigned int file_length = 0;
 	Page* pages[TABLE_MAX_PAGES]{ nullptr };
 
-	Pager(std::string filepath);
+	Pager(string filepath);
 
 	Page* get_page(unsigned int page_num);
 	void flush(unsigned int i, unsigned int size);
