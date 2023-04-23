@@ -18,48 +18,60 @@
     <ClCompile Include="db.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Row.cpp">
+    <ClCompile Include="data\Row.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Statement.cpp">
+    <ClCompile Include="data\Statement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Table.cpp">
+    <ClCompile Include="data\Table.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Pager.cpp">
+    <ClCompile Include="backend\Pager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Cursor.cpp">
+    <ClCompile Include="data\Cursor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BTree.cpp">
+    <ClCompile Include="backend\BTree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\VirtualMachine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Row.h">
+    <ClInclude Include="data\Row.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Statement.h">
+    <ClInclude Include="data\Statement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Table.h">
+    <ClInclude Include="data\Table.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Pager.h">
+    <ClInclude Include="backend\Pager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="util.h">
+    <ClInclude Include="utils\util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Page.h">
+    <ClInclude Include="backend\Page.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cursor.h">
+    <ClInclude Include="data\Cursor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BTree.h">
+    <ClInclude Include="backend\BTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\VirtualMachine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\Parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,9 +2,9 @@
 #include <sstream>
 #include <string>
 
-#include "Table.h"
-#include "util.h"
-#include "Cursor.h"
+#include "data/Table.h"
+#include "utils/util.h"
+#include "data/Cursor.h"
 
 
 // Helper functions

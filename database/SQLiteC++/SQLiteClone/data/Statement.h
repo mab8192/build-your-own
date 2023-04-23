@@ -2,7 +2,7 @@
 #include <string>
 #include <sstream>
 #include "Row.h"
-#include "util.h"
+#include "../utils/util.h"
 
 struct Statement {
 	StatementType type = STATEMENT_UNKNOWN;

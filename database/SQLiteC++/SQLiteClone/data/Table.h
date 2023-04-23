@@ -1,7 +1,7 @@
 #pragma once
-#include "util.h"
+#include "../utils/util.h"
 #include "Statement.h"
-#include "Pager.h"
+#include "../backend/Pager.h"
 
 struct Table {
 	unsigned int num_rows = 0;

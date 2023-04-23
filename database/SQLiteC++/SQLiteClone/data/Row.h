@@ -1,6 +1,6 @@
 #pragma once
 
-#include "util.h"
+#include "../utils/util.h"
 
 // Object definitions
 struct Row {

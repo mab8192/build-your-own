@@ -1,6 +1,6 @@
 #pragma once
 #include "Table.h"
-#include "util.h"
+#include "../utils/util.h"
 
 struct Cursor
 {

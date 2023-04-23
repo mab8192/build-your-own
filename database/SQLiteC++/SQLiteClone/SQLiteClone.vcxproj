@@ -127,23 +127,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BTree.cpp" />
-    <ClCompile Include="Cursor.cpp" />
+    <ClCompile Include="backend\BTree.cpp" />
+    <ClCompile Include="data\Cursor.cpp" />
     <ClCompile Include="db.cpp" />
-    <ClCompile Include="Pager.cpp" />
-    <ClCompile Include="Row.cpp" />
-    <ClCompile Include="Statement.cpp" />
-    <ClCompile Include="Table.cpp" />
+    <ClCompile Include="backend\Pager.cpp" />
+    <ClCompile Include="core\Parser.cpp" />
+    <ClCompile Include="data\Row.cpp" />
+    <ClCompile Include="data\Statement.cpp" />
+    <ClCompile Include="data\Table.cpp" />
+    <ClCompile Include="core\VirtualMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BTree.h" />
-    <ClInclude Include="Cursor.h" />
-    <ClInclude Include="Page.h" />
-    <ClInclude Include="Pager.h" />
-    <ClInclude Include="Row.h" />
-    <ClInclude Include="Statement.h" />
-    <ClInclude Include="util.h" />
-    <ClInclude Include="Table.h" />
+    <ClInclude Include="backend\BTree.h" />
+    <ClInclude Include="data\Cursor.h" />
+    <ClInclude Include="backend\Page.h" />
+    <ClInclude Include="backend\Pager.h" />
+    <ClInclude Include="core\Parser.h" />
+    <ClInclude Include="data\Row.h" />
+    <ClInclude Include="data\Statement.h" />
+    <ClInclude Include="utils\util.h" />
+    <ClInclude Include="data\Table.h" />
+    <ClInclude Include="core\VirtualMachine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
