@@ -44,16 +44,18 @@ struct Statement {
 	string cmd = "";
 	Row* row_to_insert = nullptr;
 
+	Statement();
 	Statement(string cmd);
 	~Statement();
 };
 
 struct ParseResult {
-	Statement* statement = nullptr;
+	Statement statement;
 	ParseStatus status = PARSE_UNRECOGNIZED_STATEMENT;
 	CommandType type = COMMAND_TYPE_UNKNOWN;
 
-	~ParseResult();
+	ParseResult();
+	ParseResult(const string& cmd);
 };
 
 struct Parser {

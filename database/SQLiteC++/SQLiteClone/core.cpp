@@ -3,8 +3,10 @@
 
 #include "core.h"
 
-Statement::Statement(string cmd) : cmd(cmd) {
-}
+// Statements
+Statement::Statement() {}
+
+Statement::Statement(string cmd) : cmd(cmd) {}
 
 Statement::~Statement() {
 	if (row_to_insert != nullptr)
@@ -12,31 +14,33 @@ Statement::~Statement() {
 }
 
 // Parser
-ParseResult::~ParseResult() {
-	if (statement != nullptr)
-		delete statement;
+ParseResult::ParseResult() {
+	statement = Statement();
+}
+
+ParseResult::ParseResult(const string& cmd) {
+	statement = Statement(cmd);
 }
 
 ParseResult Parser::parse_insert(const string& input) {
-	ParseResult result;
-	result.statement = new Statement(input);
-	result.statement->type = STATEMENT_INSERT;
+	ParseResult result(input);
+	result.statement.type = STATEMENT_INSERT;
 
-	result.statement->row_to_insert = new Row();
+	result.statement.row_to_insert = new Row();
 
 	std::stringstream stream(input);
 	stream.ignore(7); // skip first 7 characters
 
 	int id;
 
-	stream >> id >> result.statement->row_to_insert->username >> result.statement->row_to_insert->email;
+	stream >> id >> result.statement.row_to_insert->username >> result.statement.row_to_insert->email;
 
 	if (id < 0) {
 		result.status = PARSE_NEGATIVE_ID;
 		return result;
 	}
 	else {
-		result.statement->row_to_insert->id = id;
+		result.statement.row_to_insert->id = id;
 	}
 
 	if (stream.fail()) {
@@ -44,21 +48,23 @@ ParseResult Parser::parse_insert(const string& input) {
 		return result;
 	}
 
+	result.status = PARSE_SUCCESS;
 	return result;
 }
 
 ParseResult Parser::parse_select(const string& input) {
-	ParseResult result;
-	result.statement = new Statement(input);
-	result.statement->type = STATEMENT_SELECT;
+	ParseResult result(input);
+	result.statement.type = STATEMENT_SELECT;
 	result.status = PARSE_SUCCESS;
 	return result;
 }
 
 ParseResult Parser::parse(const string& input) {
 	if (input[0] == '.') {
-		ParseResult result;
-		return { new Statement(input), PARSE_SUCCESS, COMMAND_TYPE_META };
+		ParseResult result(input);
+		result.status = PARSE_SUCCESS;
+		result.type = COMMAND_TYPE_META;
+		return result;
 	}
 
 	if (input.substr(0, 6) == "insert") {
@@ -72,8 +78,9 @@ ParseResult Parser::parse(const string& input) {
 		return result;
 	}
 
-	ParseResult result;
+	ParseResult result(input);
 	result.type = COMMAND_TYPE_UNKNOWN;
+	return result;
 }
 
 // Executor

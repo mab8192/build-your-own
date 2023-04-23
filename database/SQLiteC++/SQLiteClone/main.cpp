@@ -40,17 +40,18 @@ int main(int argc, char* argv[]) {
 			continue;
 		}
 
-		if (parse_result.type == COMMAND_TYPE_META) {
-			switch (executor.do_meta_command(table, parse_result.statement)) {
+		switch (parse_result.type) {
+		case COMMAND_TYPE_META:
+			switch (executor.do_meta_command(table, &parse_result.statement)) {
 			case (META_COMMAND_SUCCESS):
 				continue;
 			case (META_COMMAND_UNRECOGNIZED_COMMAND):
 				std::cout << "Unrecognized command: " << cmd << std::endl;
 				continue;
 			}
-		}
-		else if (parse_result.type == COMMAND_TYPE_COMMAND) {
-			switch (executor.execute_statement(table, parse_result.statement)) {
+			break;
+		case COMMAND_TYPE_COMMAND:
+			switch (executor.execute_statement(table, &parse_result.statement)) {
 			case EXECUTE_SUCCESS:
 				std::cout << "Done." << std::endl;
 				break;
@@ -60,6 +61,10 @@ int main(int argc, char* argv[]) {
 			case EXECUTE_TABLE_FULL:
 				std::cout << "Table full!" << std::endl;
 			}
+			break;
+		case COMMAND_TYPE_UNKNOWN:
+			std::cout << "Unknown command." << std::endl;
+			break;
 		}
 	}
 }
