@@ -111,16 +111,34 @@ class ReLU(Activation):
 
 
 # ------------------ Softmax ------------------
-"""
 def softmax(x: Tensor) -> Tensor:
-    exp = np.exp(x - np.max(x))
-    return exp / np.sum(exp, axis=1, keepdims=True)
+    """
+    Compute softmax values for each sets of scores in x.
+    """
+    e_x = np.exp(x - np.max(x, axis=1, keepdims=True))
+    return e_x / e_x.sum(axis=1, keepdims=True)
 
 
 def softmax_prime(x: Tensor) -> Tensor:
+    """Compute the derivative of the softmax function."""
     s = softmax(x)
-    t1 = np.einsum('ij,jk->ijk', s, np.eye(s.shape[-1]))
-    t2 = np.einsum('ij,ik->ijk', s, s)
-    jac = t1-t2
-    return jac
-"""
+    return s * (1 - s)
+
+
+class Softmax(Activation):
+    def __init__(self) -> None:
+        super().__init__(softmax, softmax_prime)
+
+
+# ------------------ GeLU ------------------
+def gelu(x: Tensor) -> Tensor:
+    return 0.5 * x * (1 + np.tanh(np.sqrt(2 / np.pi) * (x + 0.044715 * np.power(x, 3))))
+
+
+def gelu_prime(x: Tensor) -> Tensor:
+    raise NotImplementedError
+
+
+class GeLU(Activation):
+    def __init__(self) -> None:
+        super().__init__(gelu, gelu_prime)
