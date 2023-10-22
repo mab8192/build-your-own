@@ -37,6 +37,7 @@ public class GameObject {
     public void rename(String name) {
         this.name = name;
     }
+    public String getName() { return name; }
 
     public <T extends Component> T getComponent(Class<T> componentClass) {
         for (Component c : components) {

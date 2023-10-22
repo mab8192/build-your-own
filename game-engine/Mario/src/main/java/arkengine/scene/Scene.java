@@ -41,6 +41,16 @@ public abstract class Scene {
         }
     }
 
+    /**
+     * Returns the first game object found in the scene with the given name, or null if no
+     * game object is found.
+     * @param name
+     * @return GameObject
+     */
+    public GameObject findGameObject(String name) {
+        return gameObjects.stream().filter(go -> go.getName().equals(name)).findFirst().get();
+    }
+
     public Camera getCamera() {
         return camera;
     }

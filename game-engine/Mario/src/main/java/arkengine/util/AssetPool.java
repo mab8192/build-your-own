@@ -1,6 +1,7 @@
 package arkengine.util;
 
 import arkengine.rendering.Shader;
+import arkengine.rendering.Spritesheet;
 import arkengine.rendering.Texture;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.util.Map;
 public class AssetPool {
     private static final Map<String, Shader> shaders = new HashMap<>();
     private static final Map<String, Texture> textures = new HashMap<>();
+    private static final Map<String, Spritesheet> spritesheets = new HashMap<>();
 
     public static Shader getShader(String filepath) {
         File file = new File(filepath);
@@ -37,5 +39,19 @@ public class AssetPool {
         Texture texture = new Texture(filepath);
         textures.put(file.getAbsolutePath(), texture);
         return texture;
+    }
+
+    public static void putSpritesheet(String filepath, Spritesheet spritesheet) {
+        File file = new File(filepath);
+        spritesheets.put(file.getAbsolutePath(), spritesheet);
+    }
+
+    public static Spritesheet getSpritesheet(String filepath) {
+        File file = new File(filepath);
+
+        if (!spritesheets.containsKey(file.getAbsolutePath()))
+            throw new RuntimeException("Attempted to get spritesheet: " + filepath + " before it was loaded.");
+
+        return spritesheets.get(file.getAbsolutePath());
     }
 }

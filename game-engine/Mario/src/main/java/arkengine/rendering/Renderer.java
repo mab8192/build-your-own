@@ -1,7 +1,7 @@
 package arkengine.rendering;
 
+import arkengine.components.Sprite;
 import arkengine.scene.GameObject;
-import arkengine.components.SpriteRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,22 +14,25 @@ public class Renderer {
 
     /**
      * Submit a game object to be included in a render pass
-     * @param obj The object to be drawn. Should have a SpriteRenderer component.
+     * @param obj The object to be drawn. Should have a Sprite component.
      */
     public void submit(GameObject obj) {
-        SpriteRenderer spr = obj.getComponent(SpriteRenderer.class);
+        Sprite spr = obj.getComponent(Sprite.class);
         if (spr != null) {
             add(spr);
         }
     }
 
-    private void add(SpriteRenderer spr) {
+    private void add(Sprite spr) {
         boolean added = false;
         for (RenderBatch batch : renderBatches) {
             if (batch.hasRoom()) {
-                batch.addSprite(spr);
-                added = true;
-                break;
+                Texture tex = spr.getTexture();
+                if (tex == null || (batch.hasTexture(tex) || batch.hasTextureRoom())) {
+                    batch.addSprite(spr);
+                    added = true;
+                    break;
+                }
             }
         }
 

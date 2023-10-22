@@ -1,13 +1,12 @@
 package arkengine.rendering;
 
 import arkengine.Window;
-import arkengine.components.SpriteRenderer;
+import arkengine.components.Sprite;
 import arkengine.components.Transform;
 import arkengine.util.AssetPool;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class RenderBatch {
     private boolean hasRoom = true;
 
     private Shader shader;
-    private SpriteRenderer[] sprites;
+    private Sprite[] sprites;
     private List<Texture> textures = new ArrayList<>();
     private float[] vertices;
     private int[] texSlots = {0, 1, 2, 3, 4, 5, 6, 7};
@@ -51,7 +50,7 @@ public class RenderBatch {
         this.maxBatchSize = maxBatchSize;
         shader = AssetPool.getShader("assets/shaders/default.glsl");
 
-        sprites = new SpriteRenderer[maxBatchSize];
+        sprites = new Sprite[maxBatchSize];
 
         // 6 floats per vertex, 4 vertices per quad
         vertices = new float[maxBatchSize * 4 * VERTEX_SIZE];
@@ -88,7 +87,7 @@ public class RenderBatch {
         glEnableVertexAttribArray(3);
     }
 
-    public void addSprite(SpriteRenderer sr) {
+    public void addSprite(Sprite sr) {
         if (!hasRoom) return;
 
         sprites[numSprites++] = sr;
@@ -103,7 +102,7 @@ public class RenderBatch {
     }
 
     private void loadVertexProperties(int index) {
-        SpriteRenderer sprite = sprites[index];
+        Sprite sprite = sprites[index];
 
         int offset = index * 4 * VERTEX_SIZE;
         Vector4f color = sprite.getColor();
@@ -221,4 +220,6 @@ public class RenderBatch {
     public boolean hasRoom() {
         return hasRoom;
     }
+    public boolean hasTextureRoom() { return textures.size() < 8; }
+    public boolean hasTexture(Texture tex) { return textures.contains(tex); }
 }
