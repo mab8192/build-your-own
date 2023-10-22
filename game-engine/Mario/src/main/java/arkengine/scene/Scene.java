@@ -1,8 +1,7 @@
 package arkengine.scene;
 
+import arkengine.Window;
 import arkengine.rendering.Camera;
-import arkengine.GameObject;
-import arkengine.rendering.Renderer;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ public abstract class Scene {
     private boolean isRunning = false;
     protected List<GameObject> gameObjects = new ArrayList<>();
     protected Camera camera = new Camera();
-    protected Renderer renderer = new Renderer();
 
     public Scene() { }
 
@@ -26,7 +24,7 @@ public abstract class Scene {
     public void start() {
         for (GameObject go : gameObjects) {
             go.start();
-            renderer.submit(go);
+            Window.get().getRenderer().submit(go);
         }
 
         isRunning = true;
@@ -35,9 +33,11 @@ public abstract class Scene {
     public void addGameObject(GameObject go) {
         gameObjects.add(go);
 
+        // If game object is added during runtime, immediately start it
+        // and submit it to the renderer
         if (isRunning) {
             go.start();
-            renderer.submit(go);
+            Window.get().getRenderer().submit(go);
         }
     }
 
@@ -50,8 +50,4 @@ public abstract class Scene {
             go.tick(dt);
         }
     };
-
-    public final void render() {
-        renderer.render();
-    }
 }

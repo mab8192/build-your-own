@@ -1,4 +1,4 @@
-package arkengine;
+package arkengine.scene;
 
 import arkengine.components.Component;
 import arkengine.components.Transform;

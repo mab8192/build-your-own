@@ -1,6 +1,6 @@
 package arkengine.components;
 
-import arkengine.GameObject;
+import arkengine.scene.GameObject;
 
 public abstract class Component {
 

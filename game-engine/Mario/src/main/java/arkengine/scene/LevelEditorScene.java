@@ -1,11 +1,10 @@
 package arkengine.scene;
 
-import arkengine.GameObject;
 import arkengine.components.SpriteRenderer;
 import arkengine.components.Transform;
 import arkengine.events.KeyListener;
-import arkengine.rendering.Camera;
 
+import arkengine.util.AssetPool;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -34,6 +33,12 @@ public class LevelEditorScene extends Scene {
                 addGameObject(go);
             }
         }
+
+        loadResources();
+    }
+
+    private void loadResources() {
+        AssetPool.getShader("assets/shaders/default.glsl");
     }
 
     @Override

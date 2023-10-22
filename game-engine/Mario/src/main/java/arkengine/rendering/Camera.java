@@ -6,6 +6,7 @@ import org.joml.Vector3f;
 
 public class Camera {
     private final Matrix4f projMatrix, viewMatrix;
+    private Vector3f clearColor = new Vector3f(0, 0, 0);
     public Vector3f position;
 
     public Camera() {
@@ -40,23 +41,26 @@ public class Camera {
     }
 
     public void adjustProjection(OrthoSettings settings) {
-        this.projMatrix.identity();
-        this.projMatrix.ortho(settings.left, settings.right, settings.bottom, settings.top, settings.zNear, settings.zFar);
+        projMatrix.identity();
+        projMatrix.ortho(settings.left, settings.right, settings.bottom, settings.top, settings.zNear, settings.zFar);
     }
 
     public Matrix4f getViewMatrix() {
         Vector3f cameraFront = new Vector3f(0f, 0f, -1f);
         Vector3f cameraUp = new Vector3f(0f, 1f, 0f);
-        this.viewMatrix.identity();
-        this.viewMatrix.lookAt(
+        viewMatrix.identity();
+        viewMatrix.lookAt(
                 position,
                 cameraFront.add(position.x, position.y, 0f),
                 cameraUp);
 
-        return this.viewMatrix;
+        return viewMatrix;
     }
 
     public Matrix4f getProjMatrix () {
-        return this.projMatrix;
+        return projMatrix;
     }
+
+    public void setClearColor(Vector3f clearColor) { this.clearColor = clearColor; }
+    public Vector3f getClearColor() { return clearColor; }
 }

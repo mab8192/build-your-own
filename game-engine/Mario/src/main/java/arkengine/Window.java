@@ -2,9 +2,11 @@ package arkengine;
 
 import arkengine.events.KeyListener;
 import arkengine.events.MouseListener;
+import arkengine.rendering.Renderer;
 import arkengine.scene.LevelEditorScene;
 import arkengine.scene.LevelScene;
 import arkengine.util.Time;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
 import arkengine.scene.Scene;
@@ -23,6 +25,7 @@ public class Window {
     private static Window window = null;
 
     private static Scene currentScene;
+    private static Renderer renderer = new Renderer();
 
     private Window() {
         this.width = 1920;
@@ -49,6 +52,8 @@ public class Window {
     public static Scene getScene() {
         return get().currentScene;
     }
+
+    public static Renderer getRenderer() { return get().renderer; }
 
     public static Window get() {
         if (Window.window == null) {
@@ -121,13 +126,14 @@ public class Window {
         while (!glfwWindowShouldClose(glfwWindow)) {
             glfwPollEvents();
 
-            glClearColor(1, 1, 1, 1);
+            Vector3f clearColor = currentScene.getCamera().getClearColor();
+            glClearColor(clearColor.x, clearColor.y, clearColor.z, 1);
             glClear(GL_COLOR_BUFFER_BIT); // Flush the set clear color to the entire screen
 
             // Update and render
             if (dt >= 0) {
                 currentScene.tick(dt);
-                currentScene.render();
+                renderer.render();
             }
 
             glfwSwapBuffers(glfwWindow);

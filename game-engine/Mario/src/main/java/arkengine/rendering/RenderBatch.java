@@ -3,6 +3,7 @@ package arkengine.rendering;
 import arkengine.Window;
 import arkengine.components.SpriteRenderer;
 import arkengine.components.Transform;
+import arkengine.util.AssetPool;
 import org.joml.Vector4f;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -37,8 +38,7 @@ public class RenderBatch {
 
     public RenderBatch(int maxBatchSize) {
         this.maxBatchSize = maxBatchSize;
-        shader = new Shader("assets/shaders/default.glsl");
-        shader.compile();
+        shader = AssetPool.getShader("assets/shaders/default.glsl");
 
         sprites = new SpriteRenderer[maxBatchSize];
 

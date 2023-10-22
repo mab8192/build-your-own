@@ -1,6 +1,6 @@
 package arkengine.rendering;
 
-import arkengine.GameObject;
+import arkengine.scene.GameObject;
 import arkengine.components.SpriteRenderer;
 
 import java.util.ArrayList;
@@ -12,6 +12,10 @@ public class Renderer {
 
     public Renderer() { }
 
+    /**
+     * Submit a game object to be included in a render pass
+     * @param obj The object to be drawn. Should have a SpriteRenderer component.
+     */
     public void submit(GameObject obj) {
         SpriteRenderer spr = obj.getComponent(SpriteRenderer.class);
         if (spr != null) {
