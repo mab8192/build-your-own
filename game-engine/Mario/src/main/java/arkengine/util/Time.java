@@ -1,10 +1,9 @@
 package arkengine.util;
 
-public class Time {
-    // Initialized at application startup
-    public static double timeStarted = System.nanoTime() * 1E-9;
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 
+public class Time {
     public static double getTime() {
-        return (double)((System.nanoTime() - timeStarted) * 1E-9);
+        return glfwGetTime();
     }
 }

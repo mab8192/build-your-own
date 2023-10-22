@@ -164,4 +164,10 @@ public class Shader {
         bind();
         glUniform1i(varLocation, val);
     }
+
+    public void setUniform1iv(String varName, int[] val) {
+        int varLocation = glGetUniformLocation(shaderProgramID, varName);
+        bind();
+        glUniform1iv(varLocation, val);
+    }
 }
