@@ -23,24 +23,17 @@ public class Window {
     private static Window window = null;
 
     private static Scene currentScene;
-    public float r, g, b, a;
 
     private Window() {
         this.width = 1920;
         this.height = 1080;
         this.title = "ArkEngine";
-
-        this.r = 1;
-        this.g = 0;
-        this.b = 0;
-        this.a = 1;
     }
 
     public static void changeScene(Scene.SceneType newScene) {
         switch (newScene) {
             case LEVEL_EDITOR:
                 currentScene = new LevelEditorScene();
-                //currentScene.init();
                 break;
             case LEVEL:
                 currentScene = new LevelScene();
@@ -48,6 +41,13 @@ public class Window {
             default:
                 throw new IllegalArgumentException("Unknown scene!");
         }
+
+        currentScene.init();
+        currentScene.start();
+    }
+
+    public static Scene getScene() {
+        return get().currentScene;
     }
 
     public static Window get() {
@@ -121,12 +121,14 @@ public class Window {
         while (!glfwWindowShouldClose(glfwWindow)) {
             glfwPollEvents();
 
-            glClearColor(r, g, b, a);
+            glClearColor(1, 1, 1, 1);
             glClear(GL_COLOR_BUFFER_BIT); // Flush the set clear color to the entire screen
 
             // Update and render
-            if (dt >= 0)
-                currentScene.update(dt);
+            if (dt >= 0) {
+                currentScene.tick(dt);
+                currentScene.render();
+            }
 
             glfwSwapBuffers(glfwWindow);
 

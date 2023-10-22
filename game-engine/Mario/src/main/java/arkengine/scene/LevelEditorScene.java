@@ -1,38 +1,57 @@
 package arkengine.scene;
 
+import arkengine.GameObject;
+import arkengine.components.SpriteRenderer;
+import arkengine.components.Transform;
 import arkengine.events.KeyListener;
-import arkengine.Window;
+import arkengine.rendering.Camera;
+
+import org.joml.Vector2f;
+import org.joml.Vector4f;
 
 import java.awt.event.KeyEvent;
 
 public class LevelEditorScene extends Scene {
-    private boolean changingScene = false;
-    private final double animationLength = 2.0f;
-    private double sceneChangeAnimationTimeRemaining = animationLength;
 
-    public LevelEditorScene() {
-        System.out.println("Created new LevelEditorScene");
-        Window.get().r = 1;
-        Window.get().g = 0;
-        Window.get().b = 0;
+    @Override
+    public void init() {
+        int xOffset = 10;
+        int yOffset = 10;
+
+        float totalWidth = (float)(600 - xOffset * 2);
+        float totalHeight = (float)(600 - yOffset * 2);
+
+        float sizeX = totalWidth / 100.0f;
+        float sizeY = totalHeight / 100.0f;
+
+        for (int x = 0; x < 100; x++) {
+            for (int y = 0; y < 100; y++) {
+                float xPos = xOffset + (x * sizeX);
+                float yPos = yOffset + (y * sizeY);
+
+                GameObject go = new GameObject("Obj " + x + "" + y, new Transform(new Vector2f(xPos, yPos), new Vector2f(sizeX, sizeY)));
+                go.addComponent(new SpriteRenderer(new Vector4f(xPos / totalWidth, yPos / totalHeight, 1, 1)));
+                addGameObject(go);
+            }
+        }
     }
 
     @Override
-    public void update(double dt) {
-        System.out.println("Running at: " + 1.0f/dt + " fps with delta time " + dt);
+    public void tick(double dt) {
+        super.tick(dt);
 
-        if (!changingScene && KeyListener.isKeyPressed(KeyEvent.VK_SPACE)) {
-            changingScene = true;
+        float cameraSpeed = 500f;
+        if (KeyListener.isKeyPressed(KeyEvent.VK_W)) {
+            camera.position.y += (float) (cameraSpeed * dt);
         }
-
-        if (changingScene && sceneChangeAnimationTimeRemaining > 0) {
-            sceneChangeAnimationTimeRemaining -= dt;
-            Window.get().r = (float) Math.max(Window.get().r - dt/animationLength, 0.0f);
-            Window.get().g = (float) Math.max(Window.get().g - dt/animationLength, 0.0f);
-            Window.get().b = (float) Math.max(Window.get().b - dt/animationLength, 0.0f);
-        } else if (changingScene && sceneChangeAnimationTimeRemaining < 0) {
-            // Changing scene is complete
-            Window.changeScene(SceneType.LEVEL);
+        if (KeyListener.isKeyPressed(KeyEvent.VK_A)) {
+            camera.position.x -= (float) (cameraSpeed * dt);
+        }
+        if (KeyListener.isKeyPressed(KeyEvent.VK_S)) {
+            camera.position.y -= (float) (cameraSpeed * dt);
+        }
+        if (KeyListener.isKeyPressed(KeyEvent.VK_D)) {
+            camera.position.x += (float) (cameraSpeed * dt);
         }
     }
 }
