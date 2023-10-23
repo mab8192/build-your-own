@@ -1,5 +1,6 @@
 package arkengine.rendering;
 
+import arkengine.components.Sprite;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
@@ -61,6 +62,10 @@ public class Spritesheet {
         }
 
         return spriteTexCoords.get(spriteIndex);
+    }
+
+    public Sprite getSprite(int row, int col) {
+        return new Sprite(texture, getTexCoords(row, col));
     }
 
     public int getNumSprites() {

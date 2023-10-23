@@ -8,25 +8,16 @@ import java.util.List;
 
 public class GameObject {
     private String name;
+    public Transform transform;
     private List<Component> components = new ArrayList<>();
-
-    public GameObject(String name) {
-        this.name = name;
-
-        // By default, each game object starts with a transform component
-        addComponent(new Transform());
-    }
 
     public GameObject(String name, Transform transform) {
         this.name = name;
-
-        // By default, each game object starts with a transform component
-        addComponent(transform);
+        this.transform = transform;
     }
 
-    public void addComponent(Component c) {
-        c.gameObject = this;
-        components.add(c);
+    public GameObject(String name) {
+        this(name, new Transform());
     }
 
     public GameObject withComponent(Component c) {
@@ -34,7 +25,12 @@ public class GameObject {
         return this;
     }
 
-    public void rename(String name) {
+    public void addComponent(Component c) {
+        c.gameObject = this;
+        components.add(c);
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
     public String getName() { return name; }
@@ -65,6 +61,9 @@ public class GameObject {
     }
 
     public void start() {
+        // Anything needed to start game objects should happen before component start calls
+        // ...
+
         for (Component c : components) {
             c.start();
         }

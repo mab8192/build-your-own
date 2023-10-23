@@ -2,6 +2,7 @@ package arkengine.rendering;
 
 import arkengine.Window;
 import arkengine.components.Sprite;
+import arkengine.components.SpriteRenderer;
 import arkengine.components.Transform;
 import arkengine.util.AssetPool;
 import org.joml.Vector2f;
@@ -39,7 +40,7 @@ public class RenderBatch {
     private boolean hasRoom = true;
 
     private Shader shader;
-    private Sprite[] sprites;
+    private SpriteRenderer[] spriteRenderers;
     private List<Texture> textures = new ArrayList<>();
     private float[] vertices;
     private int[] texSlots = {0, 1, 2, 3, 4, 5, 6, 7};
@@ -50,7 +51,7 @@ public class RenderBatch {
         this.maxBatchSize = maxBatchSize;
         shader = AssetPool.getShader("assets/shaders/default.glsl");
 
-        sprites = new Sprite[maxBatchSize];
+        spriteRenderers = new SpriteRenderer[maxBatchSize];
 
         // 6 floats per vertex, 4 vertices per quad
         vertices = new float[maxBatchSize * 4 * VERTEX_SIZE];
@@ -87,10 +88,10 @@ public class RenderBatch {
         glEnableVertexAttribArray(3);
     }
 
-    public void addSprite(Sprite sr) {
+    public void addSprite(SpriteRenderer sr) {
         if (!hasRoom) return;
 
-        sprites[numSprites++] = sr;
+        spriteRenderers[numSprites++] = sr;
         if (sr.getTexture() != null) {
             if (!textures.contains(sr.getTexture())) {
                 textures.add(sr.getTexture());
@@ -102,15 +103,15 @@ public class RenderBatch {
     }
 
     private void loadVertexProperties(int index) {
-        Sprite sprite = sprites[index];
+        SpriteRenderer spr = spriteRenderers[index];
 
         int offset = index * 4 * VERTEX_SIZE;
-        Vector4f color = sprite.getColor();
-        Vector2f[] texCoords = sprite.getTexCoords();
+        Vector4f color = spr.getColor();
+        Vector2f[] texCoords = spr.getTexCoords();
 
         int texID = 0;
-        if (sprite.getTexture() != null)
-            texID = textures.indexOf(sprite.getTexture()) + 1;
+        if (spr.getTexture() != null)
+            texID = textures.indexOf(spr.getTexture()) + 1;
 
         // add vertices with appropriate properties
         float xAdd = 1.0f;
@@ -131,7 +132,7 @@ public class RenderBatch {
             }
 
             // Load position
-            Transform trf =  sprite.gameObject.getComponent(Transform.class);
+            Transform trf =  spr.gameObject.transform;
             vertices[offset] = trf.position.x + (xAdd * trf.scale.x);
             vertices[offset + 1] = trf.position.y + (yAdd * trf.scale.y);
 
@@ -178,9 +179,22 @@ public class RenderBatch {
     }
 
     public void render() {
-        // For now, rebuffer all data every frame
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        boolean rebufferNeeded = false;
+
+        for (int i = 0; i < numSprites; i++) {
+            SpriteRenderer spr = spriteRenderers[i];
+            if (spr.isDirty()) {
+                loadVertexProperties(i);
+                spr.setClean();
+                rebufferNeeded = true;
+            }
+        }
+
+        // Skip rebuffer if no sprites need to be redrawn
+        if (rebufferNeeded) {
+            glBindBuffer(GL_ARRAY_BUFFER, vboID);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        }
 
         // Use the shader
         shader.bind();

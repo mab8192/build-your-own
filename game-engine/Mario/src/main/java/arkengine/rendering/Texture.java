@@ -1,5 +1,6 @@
 package arkengine.rendering;
 
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.Buffer;
@@ -14,6 +15,13 @@ public class Texture {
     private final int texID;
 
     private int width, height;
+
+    public static final Vector2f[] DEFAULT_TEX_COORDS = new Vector2f[]{
+            new Vector2f(1, 1), // top right
+            new Vector2f(1, 0), // bottom right
+            new Vector2f(0, 0), // bottom left
+            new Vector2f(0, 1), // top left
+    };
 
     public Texture(String filepath) {
         this.filepath = filepath;
@@ -71,5 +79,12 @@ public class Texture {
 
     public void unbind() {
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof Texture)) return false;
+
+        Texture other = (Texture)o;
+        return filepath.equals(other.filepath);
     }
 }
