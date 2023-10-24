@@ -1,7 +1,6 @@
 package arkengine.rendering;
 
 import arkengine.Window;
-import arkengine.components.Sprite;
 import arkengine.components.SpriteRenderer;
 import arkengine.components.Transform;
 import arkengine.util.AssetPool;

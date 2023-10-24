@@ -1,13 +1,12 @@
-package arkengine.components;
+package arkengine.rendering;
 
-import arkengine.rendering.Texture;
 import arkengine.util.Color;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import java.util.Arrays;
 
-public class Sprite extends Component{
+public class Sprite {
 
     private Texture texture;
     private Vector4f color;
@@ -46,6 +45,7 @@ public class Sprite extends Component{
     }
 
     public Vector2f[] getTexCoords() { return texCoords; }
+    public void setTexCoords(Vector2f[] texCoords) { this.texCoords = texCoords; }
 
     public void copyTo(Sprite to) {
         to.texture = this.texture;

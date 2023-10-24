@@ -1,11 +1,8 @@
 package arkengine.rendering;
 
-import arkengine.components.Sprite;
 import org.joml.Vector2f;
-import org.joml.Vector4f;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Spritesheet {

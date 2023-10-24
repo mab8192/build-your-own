@@ -1,7 +1,6 @@
 package arkengine;
 
-import arkengine.events.KeyListener;
-import arkengine.events.MouseListener;
+import arkengine.events.Input;
 import arkengine.rendering.Renderer;
 import arkengine.scene.LevelEditorScene;
 import arkengine.scene.LevelScene;
@@ -97,10 +96,10 @@ public class Window {
         }
 
         // Add callbacks
-        glfwSetCursorPosCallback(glfwWindow, MouseListener::mousePosCallback);
-        glfwSetMouseButtonCallback(glfwWindow, MouseListener::mouseButtonCallback);
-        glfwSetScrollCallback(glfwWindow, MouseListener::mouseScrollCallback);
-        glfwSetKeyCallback(glfwWindow, KeyListener::keyCallback);
+        glfwSetCursorPosCallback(glfwWindow, Input::mousePosCallback);
+        glfwSetMouseButtonCallback(glfwWindow, Input::mouseButtonCallback);
+        glfwSetScrollCallback(glfwWindow, Input::mouseScrollCallback);
+        glfwSetKeyCallback(glfwWindow, Input::keyCallback);
 
         // Make the OpenGL context current
         glfwMakeContextCurrent(glfwWindow);
@@ -135,8 +134,11 @@ public class Window {
                 currentScene.tick(dt);
                 renderer.render();
             }
-
+            
             glfwSwapBuffers(glfwWindow);
+
+            // Clear input buffers
+            Input.endFrame();
 
             endTime = Time.getTime();
             dt = endTime - beginTime;
