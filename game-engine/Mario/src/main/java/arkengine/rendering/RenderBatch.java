@@ -45,8 +45,10 @@ public class RenderBatch {
     private int[] texSlots = {0, 1, 2, 3, 4, 5, 6, 7};
     private int vaoID, vboID;
     private int maxBatchSize;
+    private int zIndex;
 
-    public RenderBatch(int maxBatchSize) {
+    public RenderBatch(int maxBatchSize, int zIndex) {
+        this.zIndex = zIndex;
         this.maxBatchSize = maxBatchSize;
         shader = AssetPool.getShader("assets/shaders/default.glsl");
 
@@ -132,8 +134,8 @@ public class RenderBatch {
 
             // Load position
             Transform trf =  spr.gameObject.transform;
-            vertices[offset] = trf.position.x + (xAdd * trf.scale.x);
-            vertices[offset + 1] = trf.position.y + (yAdd * trf.scale.y);
+            vertices[offset] = trf.position.x + spr.getOffset().x + (xAdd * trf.scale.x);
+            vertices[offset + 1] = trf.position.y + spr.getOffset().y + (yAdd * trf.scale.y);
 
             // Load color
             vertices[offset + 2] = color.x;
@@ -235,4 +237,5 @@ public class RenderBatch {
     }
     public boolean hasTextureRoom() { return textures.size() < 8; }
     public boolean hasTexture(Texture tex) { return textures.contains(tex); }
+    public int getzIndex() { return zIndex; }
 }

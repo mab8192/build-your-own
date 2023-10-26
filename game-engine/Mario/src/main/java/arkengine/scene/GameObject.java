@@ -9,15 +9,21 @@ import java.util.List;
 public class GameObject {
     private String name;
     public Transform transform;
+    private int zIndex = 0;
     private List<Component> components = new ArrayList<>();
-
-    public GameObject(String name, Transform transform) {
-        this.name = name;
-        this.transform = transform;
-    }
 
     public GameObject(String name) {
         this(name, new Transform());
+    }
+
+    public GameObject(String name, Transform transform) {
+        this(name, transform, 0);
+    }
+
+    public GameObject(String name, Transform transform, int zIndex) {
+        this.name = name;
+        this.transform = transform;
+        this.zIndex = zIndex;
     }
 
     public GameObject withComponent(Component c) {
@@ -35,6 +41,8 @@ public class GameObject {
     }
     public String getName() { return name; }
 
+    public int getzIndex() { return zIndex; }
+
     public <T extends Component> T getComponent(Class<T> componentClass) {
         for (Component c : components) {
             if (componentClass.isAssignableFrom(c.getClass())) {
@@ -48,6 +56,22 @@ public class GameObject {
         }
 
         return null;
+    }
+
+    public <T extends Component> ArrayList<T> getAllComponents(Class<T> componentClass) {
+        ArrayList<T> requestedComponents = new ArrayList<>();
+        for (Component c : components) {
+            if (componentClass.isAssignableFrom(c.getClass())) {
+                try {
+                    requestedComponents.add(componentClass.cast(c));
+                } catch (ClassCastException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException("Failed to cast component");
+                }
+            }
+        }
+
+        return requestedComponents;
     }
 
     public <T extends Component> void removeComponent(Class<T> componentClass) {

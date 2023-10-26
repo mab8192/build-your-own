@@ -2,6 +2,7 @@ package arkengine.scene;
 
 import arkengine.Window;
 import arkengine.rendering.Camera;
+import arkengine.rendering.ImGuiLayer;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -9,8 +10,8 @@ import java.util.ArrayList;
 public abstract class Scene {
 
     public enum SceneType {
-        LEVEL_EDITOR,
-        LEVEL
+        EDITOR,
+        RUNTIME
     }
 
     private boolean isRunning = false;
@@ -19,6 +20,7 @@ public abstract class Scene {
 
     public Scene() { }
 
+    // --- Functions to override
     public void init() { }
 
     public void start() {
@@ -30,6 +32,15 @@ public abstract class Scene {
         isRunning = true;
     }
 
+    public void tick(double dt) {
+        for (GameObject go : gameObjects) {
+            go.tick(dt);
+        }
+    };
+
+    public void imgui() { }
+
+    // --- Functions that don't need to be overridden
     public void addGameObject(GameObject go) {
         gameObjects.add(go);
 
@@ -54,10 +65,4 @@ public abstract class Scene {
     public Camera getCamera() {
         return camera;
     }
-
-    public void tick(double dt) {
-        for (GameObject go : gameObjects) {
-            go.tick(dt);
-        }
-    };
 }

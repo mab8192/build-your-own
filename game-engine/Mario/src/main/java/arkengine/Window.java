@@ -1,9 +1,10 @@
 package arkengine;
 
 import arkengine.events.Input;
+import arkengine.rendering.ImGuiLayer;
 import arkengine.rendering.Renderer;
-import arkengine.scene.LevelEditorScene;
-import arkengine.scene.LevelScene;
+import arkengine.scene.EditorScene;
+import arkengine.scene.RuntimeScene;
 import arkengine.util.Time;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -24,7 +25,7 @@ public class Window {
     private static Window window = null;
 
     private static Scene currentScene;
-    private static Renderer renderer = new Renderer();
+    private static Renderer renderer;
 
     private Window() {
         this.width = 1920;
@@ -34,11 +35,11 @@ public class Window {
 
     public static void changeScene(Scene.SceneType newScene) {
         switch (newScene) {
-            case LEVEL_EDITOR:
-                currentScene = new LevelEditorScene();
+            case EDITOR:
+                currentScene = new EditorScene();
                 break;
-            case LEVEL:
-                currentScene = new LevelScene();
+            case RUNTIME:
+                currentScene = new RuntimeScene();
                 break;
             default:
                 throw new IllegalArgumentException("Unknown scene!");
@@ -89,6 +90,10 @@ public class Window {
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 
+        // Using 3.3 so we can set glslVersion for ImGui as #version 330
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
         // Create the window
         glfwWindow = glfwCreateWindow(this.width, this.height, this.title, NULL, NULL);
         if (glfwWindow == NULL) {
@@ -113,7 +118,11 @@ public class Window {
         // Required for LWJGL
         GL.createCapabilities();
 
-        Window.changeScene(Scene.SceneType.LEVEL_EDITOR);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+        renderer = new Renderer(glfwWindow);
+        Window.changeScene(Scene.SceneType.EDITOR);
     }
 
     // Main application loop
@@ -132,9 +141,9 @@ public class Window {
             // Update and render
             if (dt >= 0) {
                 currentScene.tick(dt);
-                renderer.render();
+                renderer.render(currentScene);
             }
-            
+
             glfwSwapBuffers(glfwWindow);
 
             // Clear input buffers
@@ -144,5 +153,9 @@ public class Window {
             dt = endTime - beginTime;
             beginTime = endTime;
         }
+    }
+
+    public void destroy() {
+        glfwTerminate();
     }
 }

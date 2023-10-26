@@ -10,17 +10,33 @@ public class SpriteRenderer extends Component {
     private Sprite sprite;
     private boolean dirty = true; // whether the data should be reloaded for rendering
     private Transform lastTransform; // To keep track of our GameObject's transform for if that changes
+    private Vector2f offset; // Offset at which to render the sprite from the parent gameobject's position
 
     public SpriteRenderer() {
+        this(new Vector2f());
+    }
+
+    public SpriteRenderer(Vector2f offset) {
         this.sprite = new Sprite();
+        this.offset = offset;
     }
 
     public SpriteRenderer(Vector4f color) {
+        this(color, new Vector2f());
+    }
+
+    public SpriteRenderer(Vector4f color, Vector2f offset) {
         this.sprite = new Sprite(color);
+        this.offset = offset;
     }
 
     public SpriteRenderer(Sprite sprite) {
+        this(sprite, new Vector2f());
+    }
+
+    public SpriteRenderer(Sprite sprite, Vector2f offset) {
         this.sprite = sprite;
+        this.offset = offset;
     }
 
     @Override
@@ -36,6 +52,9 @@ public class SpriteRenderer extends Component {
             gameObject.transform.copyTo(lastTransform);
         }
     }
+
+    public void setOffset(Vector2f offset) { this.offset = offset; dirty = true; }
+    public Vector2f getOffset() { return this.offset; }
 
     public Vector4f getColor() {
         if (sprite != null)
