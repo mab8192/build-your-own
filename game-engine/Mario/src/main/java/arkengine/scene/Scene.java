@@ -2,7 +2,6 @@ package arkengine.scene;
 
 import arkengine.Window;
 import arkengine.rendering.Camera;
-import arkengine.rendering.ImGuiLayer;
 
 import java.util.List;
 import java.util.ArrayList;

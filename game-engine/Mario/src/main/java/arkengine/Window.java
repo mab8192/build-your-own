@@ -1,7 +1,6 @@
 package arkengine;
 
 import arkengine.events.Input;
-import arkengine.rendering.ImGuiLayer;
 import arkengine.rendering.Renderer;
 import arkengine.scene.EditorScene;
 import arkengine.scene.RuntimeScene;
