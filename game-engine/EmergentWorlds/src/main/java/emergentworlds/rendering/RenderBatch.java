@@ -2,7 +2,6 @@ package emergentworlds.rendering;
 
 import emergentworlds.Window;
 import emergentworlds.components.SpriteRenderer;
-import emergentworlds.components.Transform;
 import emergentworlds.util.AssetPool;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -35,24 +34,21 @@ public class RenderBatch {
     private final int VERTEX_SIZE = 9;
     private final int VERTEX_SIZE_BYTES = VERTEX_SIZE * Float.BYTES;
 
-    private int numSprites = 0;
     private boolean hasRoom = true;
 
-    private Shader shader;
-    private SpriteRenderer[] spriteRenderers;
-    private List<Texture> textures = new ArrayList<>();
+    private final Shader shader;
+    private final List<IRenderable> renderables = new ArrayList<>();
+    private final List<Texture> textures = new ArrayList<>();
     private float[] vertices;
     private int[] texSlots = {0, 1, 2, 3, 4, 5, 6, 7};
     private int vaoID, vboID;
-    private int maxBatchSize;
-    private int zIndex;
+    private final int maxBatchSize;
+    private final int zIndex;
 
     public RenderBatch(int maxBatchSize, int zIndex) {
         this.zIndex = zIndex;
         this.maxBatchSize = maxBatchSize;
         shader = AssetPool.getShader("assets/shaders/default.glsl");
-
-        spriteRenderers = new SpriteRenderer[maxBatchSize];
 
         // 6 floats per vertex, 4 vertices per quad
         vertices = new float[maxBatchSize * 4 * VERTEX_SIZE];
@@ -89,30 +85,47 @@ public class RenderBatch {
         glEnableVertexAttribArray(3);
     }
 
-    public void addSprite(SpriteRenderer sr) {
-        if (!hasRoom) return;
+    public boolean add(IRenderable sr) {
+        if (!hasRoom) return false;
 
-        spriteRenderers[numSprites++] = sr;
+        renderables.add(sr);
         if (sr.getTexture() != null) {
             if (!textures.contains(sr.getTexture())) {
                 textures.add(sr.getTexture());
             }
         }
-        loadVertexProperties(numSprites - 1);
+        loadVertexProperties(renderables.size() - 1);
 
-        hasRoom = numSprites < maxBatchSize;
+        hasRoom = renderables.size() < maxBatchSize;
+        return true;
+    }
+
+    public void remove(IRenderable spr) {
+        if (renderables.remove(spr))
+            refresh();
+        hasRoom = true;
+    }
+
+    private void refresh() {
+        vertices = new float[maxBatchSize * 4 * VERTEX_SIZE];
+        for (int i = 0; i < renderables.size(); i++) {
+            loadVertexProperties(i);
+        }
     }
 
     private void loadVertexProperties(int index) {
-        SpriteRenderer spr = spriteRenderers[index];
+        IRenderable obj = renderables.get(index);
 
         int offset = index * 4 * VERTEX_SIZE;
-        Vector4f color = spr.getColor();
-        Vector2f[] texCoords = spr.getTexCoords();
+        Vector2f position = obj.getWorldPosition();
+        Vector2f scale = obj.getScale();
+        Vector2f spriteOffset = obj.getOffset();
+        Vector4f color = obj.getColor();
+        Vector2f[] texCoords = obj.getTexCoords();
 
         int texID = 0;
-        if (spr.getTexture() != null)
-            texID = textures.indexOf(spr.getTexture()) + 1;
+        if (obj.getTexture() != null)
+            texID = textures.indexOf(obj.getTexture()) + 1;
 
         // add vertices with appropriate properties
         float xAdd = 1.0f;
@@ -133,9 +146,8 @@ public class RenderBatch {
             }
 
             // Load position
-            Transform trf =  spr._entity.transform;
-            vertices[offset] = trf.position.x + spr.getOffset().x + (xAdd * trf.scale.x);
-            vertices[offset + 1] = trf.position.y + spr.getOffset().y + (yAdd * trf.scale.y);
+            vertices[offset] = position.x + spriteOffset.x + (xAdd * scale.x);
+            vertices[offset + 1] = position.y + spriteOffset.y + (yAdd * scale.y);
 
             // Load color
             vertices[offset + 2] = color.x;
@@ -182,8 +194,8 @@ public class RenderBatch {
     public void render() {
         boolean rebufferNeeded = false;
 
-        for (int i = 0; i < numSprites; i++) {
-            SpriteRenderer spr = spriteRenderers[i];
+        for (int i = 0; i < renderables.size(); i++) {
+            IRenderable spr = renderables.get(i);
             if (spr.isDirty()) {
                 loadVertexProperties(i);
                 spr.setClean();
@@ -215,7 +227,7 @@ public class RenderBatch {
         glEnableVertexAttribArray(2);
         glEnableVertexAttribArray(3);
 
-        glDrawElements(GL_TRIANGLES, numSprites * 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, renderables.size() * 6, GL_UNSIGNED_INT, 0);
 
         // Unbind everything
         glDisableVertexAttribArray(0);

@@ -1,10 +1,10 @@
 package emergentworlds.world.cell;
 
 public enum CellType {
+    VOID,
     SAND,
     ROCK,
     WATER,
-    VOID,
     AIR,
     DIRT,
     GRASS

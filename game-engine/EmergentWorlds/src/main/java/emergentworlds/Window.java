@@ -31,6 +31,8 @@ public class Window {
     }
 
     public static void loadWorld(World world) {
+        renderer.reset();
+
         activeWorld = world;
 
         activeWorld.init();
@@ -38,10 +40,10 @@ public class Window {
     }
 
     public static World getWorld() {
-        return get().activeWorld;
+        return activeWorld;
     }
 
-    public static Renderer getRenderer() { return get().renderer; }
+    public static Renderer getRenderer() { return renderer; }
 
     public static Window get() {
         if (Window.window == null) {
@@ -52,7 +54,6 @@ public class Window {
     }
 
     public void run() {
-        init();
         loop();
 
         // Free memory
@@ -110,7 +111,6 @@ public class Window {
         glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         renderer = new Renderer();
-        Window.loadWorld(World.loadDefaultWorld()); // TODO: Change startup behavior to load a specific world somehow
     }
 
     // Main application loop
