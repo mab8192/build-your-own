@@ -1,6 +1,7 @@
 package emergentworlds.rendering;
 
 import emergentworlds.util.Color;
+import emergentworlds.world.World;
 import emergentworlds.world.cell.Cell;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -33,15 +34,9 @@ public class CellRenderer implements IRenderable {
         this._color = color;
     }
 
-    public Cell getCell() {
-        return _cell;
-    }
-
     @Override
     public Vector2f getWorldPosition() {
-        float x = _cell.getWorldPosition().x * _cell.getWorld().getCellSize();
-        float y = _cell.getWorldPosition().y * _cell.getWorld().getCellSize();
-        return new Vector2f(x, y);
+        return new Vector2f(_cell.getWorldPosition()).mul(World.getActiveWorld().getCellSize());
     }
 
     @Override
@@ -56,7 +51,7 @@ public class CellRenderer implements IRenderable {
 
     @Override
     public Vector2f getScale() {
-        return new Vector2f(_cell.getWorld().getCellSize(), _cell.getWorld().getCellSize());
+        return new Vector2f(World.getActiveWorld().getCellSize());
     }
 
     public void setColor(Vector4f _color) {
@@ -71,14 +66,12 @@ public class CellRenderer implements IRenderable {
 
     @Override
     public Texture getTexture() {
-        if (_sprite != null)
-            return _sprite.getTexture();
+        if (_sprite != null) return _sprite.getTexture();
         return null;
     }
 
     public Vector2f[] getTexCoords() {
-        if (_sprite != null)
-            return _sprite.getTexCoords();
+        if (_sprite != null) return _sprite.getTexCoords();
         return Texture.DEFAULT_TEX_COORDS;
     }
 

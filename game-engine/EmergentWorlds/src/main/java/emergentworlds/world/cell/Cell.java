@@ -1,36 +1,31 @@
 package emergentworlds.world.cell;
 
 import emergentworlds.rendering.CellRenderer;
-import emergentworlds.world.World;
-import emergentworlds.world.cell.cells.VoidCell;
+import emergentworlds.world.ITickable;
 import org.joml.Vector2i;
 
 /**
  * Represents a single cell in the World
  */
-public abstract class Cell {
-    protected final World _world;
+public abstract class Cell implements ITickable {
     protected CellType _type = CellType.VOID;
     protected CellRenderer _cellRenderer = new CellRenderer(this);
     protected Vector2i _worldPosition = new Vector2i();
+    protected boolean _tickable = false; // all cells are not tickable by default
 
-    public Cell(World world) {
-        this._world = world;
-    }
+    public Cell() { }
+
+    public void tick(double dt) { }
 
     public Vector2i getWorldPosition() {
         return _worldPosition;
     }
-
-    public void setWorldPosition(int x, int y) {
-        setWorldPosition(new Vector2i(x, y));
-    }
-
     public void setWorldPosition(Vector2i _worldPosition) {
         this._worldPosition = _worldPosition;
     }
 
-    public final World getWorld() { return _world; }
+    public boolean isTickable() { return _tickable; }
+
     public final CellType getType() { return _type; }
     public final CellRenderer getRenderer() { return _cellRenderer; }
 }
