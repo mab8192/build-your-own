@@ -35,6 +35,31 @@ const Color& Atom::getColor() const
 	return _color;
 }
 
+const int Atom::getMaxBonds() const
+{
+	return _maxBonds;
+}
+
+bool Atom::canFormBond() const
+{
+	return _numBonds < _maxBonds;
+}
+
+void Atom::addBond()
+{
+	_numBonds++;
+}
+
+void Atom::breakBond()
+{
+	_numBonds--;
+}
+
+void Atom::setColor(Color color)
+{
+	_color = color;
+}
+
 void Atom::applyForce(const Vector2& force)
 {
 	Vector2 scaledForce = Vector2Scale(force, 1.0f / _mass);
@@ -44,11 +69,12 @@ void Atom::applyForce(const Vector2& force)
 
 void Atom::tick(double delta)
 {
-	// Should be called last
-
 	// update velocity based on any applied forces
-	_vel.x += _acc.x * delta;
-	_vel.y += _acc.y * delta;
+	_vel.x += _acc.x * delta * 0.9f;
+	_vel.y += _acc.y * delta * 0.9f;
+
+	// Apply damping to velocity
+	_vel = Vector2Scale(_vel, 0.8f);
 
 	// update position
 	_pos.x += _vel.x * delta;
@@ -58,3 +84,4 @@ void Atom::tick(double delta)
 	_acc.x = 0;
 	_acc.y = 0;
 }
+

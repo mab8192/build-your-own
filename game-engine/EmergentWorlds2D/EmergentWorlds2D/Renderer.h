@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "Atom.h"
+#include "Bond.h"
 #include <vector>
 
 
@@ -10,6 +11,6 @@ public:
 	Renderer();
 
 	void init();
-	void render(const std::vector<Atom>& atoms);
+	void render(const std::vector<std::shared_ptr<Atom>>& atoms, const std::vector<std::shared_ptr<Bond>>& bonds);
 };
 
