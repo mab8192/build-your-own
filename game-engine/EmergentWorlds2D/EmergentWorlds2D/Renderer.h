@@ -3,6 +3,7 @@
 #include "Atom.h"
 #include "Bond.h"
 #include <vector>
+#include <memory>
 
 
 class Renderer

@@ -1,3 +1,4 @@
+#include "Config.h"
 #include "raylib.h"
 #include "Renderer.h"
 
@@ -14,14 +15,16 @@ void Renderer::render(const std::vector<std::shared_ptr<Atom>>& atoms, const std
 	BeginDrawing();
 	ClearBackground(BLACK);
 
-	for (const std::shared_ptr<Atom>& atom : atoms) {
-		DrawCircleV(atom->getPosition(), 3.0f, atom->getColor());
+	for (auto atom : atoms) {
+		DrawCircleV(atom->getPosition(), ATOM_RADIUS, atom->getProps().color);
 	}
 
-	for (const std::shared_ptr<Bond>& bond : bonds)
+	for (auto bond : bonds)
 	{
-		DrawLineV(bond->getA1().getPosition(), bond->getA2().getPosition(), WHITE);
+		DrawLineV(bond->getA1()->getPosition(), bond->getA2()->getPosition(), WHITE);
 	}
+
+	DrawFPS(10, 10);
 
 	EndDrawing();
 }

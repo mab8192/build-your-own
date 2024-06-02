@@ -2,79 +2,75 @@
 #include <iostream>
 #include "raymath.h"
 
-Atom::Atom(Vector2 pos, Color col)
-	: _pos(pos), _color(col) 
+Atom::Atom(int id, Vector2 pos, const Properties& props)
+	: _id(id), _pos(pos), _props(props)
 {
-	_vel = Vector2();
-	_acc = Vector2();
-	_mass = 1.0f;
-	_temp = 273.25f;
+
+}
+
+const int Atom::getID() const
+{
+	return _id;
 }
 
 const Vector2& Atom::getPosition() const
 {
-	// TODO: insert return statement here
 	return _pos;
 }
 
 const Vector2& Atom::getVelocity() const
 {
-	// TODO: insert return statement here
 	return _vel;
 }
 
 const Vector2& Atom::getAcceleration() const
 {
-	// TODO: insert return statement here
 	return _acc;
 }
 
-const Color& Atom::getColor() const
+const Atom::Properties& Atom::getProps() const
 {
-	// TODO: insert return statement here
-	return _color;
+	return _props;
 }
 
-const int Atom::getMaxBonds() const
+void Atom::setPosition(Vector2 pos)
 {
-	return _maxBonds;
+	_pos = pos;
 }
 
-bool Atom::canFormBond() const
+void Atom::addBond(std::shared_ptr<Atom> other)
 {
-	return _numBonds < _maxBonds;
+	if (_bondedWith.size() >= _maxBonds)
+	{
+		std::cerr << "Attempted to add a bond beyond the allowable limit!" << std::endl;
+		return;
+	}
+
+	_bondedWith.insert(other);
 }
 
-void Atom::addBond()
+bool Atom::canFormBond(std::shared_ptr<Atom> other) const
 {
-	_numBonds++;
-}
-
-void Atom::breakBond()
-{
-	_numBonds--;
-}
-
-void Atom::setColor(Color color)
-{
-	_color = color;
+	if (_bondedWith.size() >= _maxBonds) return false;
+	return !_bondedWith.contains(other);
 }
 
 void Atom::applyForce(const Vector2& force)
 {
-	Vector2 scaledForce = Vector2Scale(force, 1.0f / _mass);
+	Vector2 scaledForce = Vector2Scale(force, 1.0f / _props.mass);
 	_acc.x += scaledForce.x;
 	_acc.y += scaledForce.y;
 }
 
-void Atom::tick(double delta)
+void Atom::tick(float delta)
 {
 	// update velocity based on any applied forces
-	_vel.x += _acc.x * delta * 0.9f;
-	_vel.y += _acc.y * delta * 0.9f;
+	_vel.x += _acc.x * delta;
+	_vel.y += _acc.y * delta;
 
-	// Apply damping to velocity
-	_vel = Vector2Scale(_vel, 0.8f);
+	_vel = Vector2Scale(_vel, 0.9f); // damping (friction)
+
+	// _vel = Vector2Clamp(_vel, { -100, -100 }, { 100, 100 });
 
 	// update position
 	_pos.x += _vel.x * delta;
@@ -85,3 +81,9 @@ void Atom::tick(double delta)
 	_acc.y = 0;
 }
 
+Atom::Properties::Properties(const Properties& props)
+{
+	mass = props.mass;
+	color = props.color;
+	temp = props.temp;
+}

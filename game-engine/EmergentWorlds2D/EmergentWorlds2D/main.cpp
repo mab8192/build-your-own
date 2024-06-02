@@ -1,8 +1,12 @@
 #include "Bond.h"
+#include "Config.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "Renderer.h"
+#include "World.h"
+#include <iostream>
 #include <string>
+#include <memory>
 
 struct AppSpec {
 	int windowWidth, windowHeight;
@@ -13,94 +17,85 @@ struct AppSpec {
 class Application {
 public:
 	Application(const AppSpec& spec) 
-		: _spec(spec), _deltaTime(0) {
-
-	}
-
-	void init() {
+		: _spec(spec), _world(World())
+	{
 		SetConfigFlags(_spec.flags);
 		InitWindow(_spec.windowWidth, _spec.windowHeight, _spec.title.c_str());
 
 		SetTargetFPS(60);
 
-		for (int i = 0; i < 10; i++) {
-			_atoms.push_back(std::make_shared<Atom>(Vector2{ static_cast<float>(GetRandomValue(10, _spec.windowWidth - 10)),
+		for (int i = 0; i < 100; i++)
+		{
+			Atom::Properties props;
+			props.color = RED;
+			_world.spawn(Vector2{ static_cast<float>(GetRandomValue(10, _spec.windowWidth - 10)),
 						static_cast<float>(GetRandomValue(10, _spec.windowHeight - 10)) },
-				RED));
+				props); // the atom makes its own copy of props, fine to destroy here
 		}
 	}
 
-	void update() {
+	void update(float delta)
+	{
 		// handle input
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !pickedAtom)
 		{
-			_atoms.emplace_back(std::make_shared<Atom>(GetMousePosition(), BLUE));
-		}
-
-		// Form new bonds and break existing ones that are too far away
-		for (int i = 0; i < _atoms.size(); i++) {
-			Atom& a1 = *_atoms[i];
-			for (int j = i + 1; j < _atoms.size(); j++) {
-				Atom& a2 = *_atoms[j];
-				float dist = Vector2Distance(a1.getPosition(), a2.getPosition());
-				// If this pair of atoms can form a bond...
-				// TODO: Make sure they aren't already bonded!
-				if (dist < BOND_TARGET_DISTANCE && a1.canFormBond() && a2.canFormBond()) {
-					// create bond
-					_bonds.emplace_back(std::make_shared<Bond>(_atoms[i], _atoms[j], 10.0f));
-					a1.setColor(GREEN);
-					a2.setColor(GREEN);
-				}
+			std::shared_ptr<Atom> atom = _world.pickAtom(GetMousePosition(), ATOM_RADIUS);
+			if (atom)
+			{
+				std::cout << "Picked atom " << atom->getID() << std::endl;
+				pickedAtom = atom;
 			}
+			// atom dies here and reference count decs
 		}
-
-		std::vector<std::shared_ptr<Bond>> remainingBonds;
-		for (std::shared_ptr<Bond>& bondp : _bonds)
+		else if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
 		{
-			Bond& bond = *bondp.get();
-			if (!bond.shouldBreak()) {
-				// apply force
-				Vector2 force = bond.getForce();
-				bond.getA1().applyForce(force); 
-				bond.getA2().applyForce(Vector2Negate(force)); 
-				remainingBonds.push_back(bondp);
-			}
+			pickedAtom.reset();
 		}
-		_bonds = remainingBonds;
 
-		printf("number of bonds: %d\n", _bonds.size());
+		if (pickedAtom)
+		{
+			/*
+			* Vector2 dir = Vector2Normalize(Vector2Subtract(GetMousePosition(), pickedAtom->getPosition()));
+			* Vector2 force = Vector2Scale(dir, 2000.0f);
+			* pickedAtom->applyForce(force);
+			*/
+			pickedAtom->setPosition(GetMousePosition());
+		}
 
-		// tick atoms
-		for (std::shared_ptr<Atom>& atom : _atoms) {
-			atom->tick(_deltaTime);
+		// Update the world
+		_world.tick(delta);
+	}
+
+	void run() 
+	{
+		float delta = 0;
+
+		while (!WindowShouldClose()) 
+		{
+			float startTime = GetTime();
+
+			update(delta);
+			_renderer.render(_world.getAtoms(), _world.getBonds());
+
+			delta = GetTime() - startTime;
 		}
 	}
 
-	void run() {
-		while (!WindowShouldClose()) {
-			double startTime = GetTime();
-			update();
-			_renderer.render(_atoms, _bonds);
-			_deltaTime = GetTime() - startTime;
-		}
-	}
-
-	void close() {
+	void close() 
+	{
 
 	}
 
 private:
 	AppSpec _spec;
 	Renderer _renderer;
-	std::vector<std::shared_ptr<Atom>> _atoms;
-	std::vector<std::shared_ptr<Bond>> _bonds;
-	double _deltaTime;
-};
+	World _world;
 
+	std::shared_ptr<Atom> pickedAtom;
+};
 
 int main() {
 	Application app({ 800, 600, "Emergent Worlds 2D", (int) FLAG_MSAA_4X_HINT | FLAG_WINDOW_ALWAYS_RUN });
-	app.init();
 	app.run();
 	app.close();
 
