@@ -1,28 +1,28 @@
-#include "raylib.h"
-#include "raymath.h"
+#include "raylib-cpp.hpp"
 #include <vector>
 #include <memory>
 #include <algorithm>
 #include <functional>
 
 namespace Config {
-	const int WIDTH = 1280;
-	const int HEIGHT = 800;
+	const int WIDTH = 1500;
+	const int HEIGHT = 1000;
 
-	const float GRAVITY = 0;
-	const float COLLISION_DAMPING = 0.7f;
-	const float PARTICLE_SIZE = 2.0f;
+	const float GRAVITY = 0.0f;
+	const float COLLISION_DAMPING = 0.95f;
+	const float VELOCITY_DAMPING = 0.98f;
+	const float PARTICLE_SIZE = 6.0f;
 	const float PARTICLE_SPACING = 0.0f;
-	const float TARGET_DENSITY = 0.01f;
-	const float PRESSURE_FORCE = 10.0f;
+	const float PRESSURE_FORCE = 10000.0f;
 
-	float particleSmoothingRadius = 30.0f;
+	float targetDensity = 1.0f;
+	float particleSmoothingRadius = 75.0f;
 }
 
 struct Particle {
-	Vector2 pos{};
-	Vector2 vel{};
-	Vector2 acc{};
+	raylib::Vector2 pos{};
+	raylib::Vector2 vel{};
+	raylib::Vector2 acc{};
 
 	float density = -1.0f;
 	float mass = 1.0f;
@@ -34,19 +34,28 @@ struct Particle {
 		pos.y = y;
 	}
 
-	void update(double dt) {
-		vel.x += acc.x * dt;
-		vel.y += acc.y * dt;
+	void applyForce(const raylib::Vector2& force) {
+		acc += force / density; // density, not mass here. working with small volumes of fluid, not an actual particle
+	}
 
-		pos.x += vel.x * dt;
-		pos.y += vel.y * dt;
+	void update(double dt) {
+		vel += acc * dt;
+
+		// cap velocity
+		vel = Vector2Clamp(vel, raylib::Vector2{ -30, -30 }, raylib::Vector2{ 30, 30 });
+
+		pos += vel * dt;
+
+		vel *= Config::VELOCITY_DAMPING;
+
+		acc = raylib::Vector2::Zero();
 	}
 };
 
 struct World {
 	std::vector<std::shared_ptr<Particle>> particles;
-	float inset = 50;
-	Rectangle bbox{ inset, inset, Config::WIDTH - 2*inset, Config::HEIGHT - 2*inset };
+	float inset = 100;
+	raylib::Rectangle bbox = raylib::Rectangle(inset, inset, Config::WIDTH - 2 * inset, Config::HEIGHT - 2 * inset);
 
 	std::shared_ptr<Particle> spawn(int x, int y) {
 		std::shared_ptr<Particle> p = std::make_shared<Particle>(x, y);
@@ -58,9 +67,20 @@ struct World {
 	}
 	
 	void update(double dt) {
-		for (auto p : particles) {
-			p.get()->update(dt);
+		calculateDensities(dt);
 
+		// apply forces
+		for (auto p : particles) {
+			// apply gravity
+			p.get()->applyForce({ 0, Config::GRAVITY });
+
+			// apply pressure force
+			p.get()->applyForce(calculateParticlePressure(p));
+		}
+
+		// Update positions and resolve collisions
+		for (auto pref : particles) {
+			pref.get()->update(dt);
 			resolveCollisions();
 		}
 	}
@@ -93,19 +113,18 @@ struct World {
 	}
 
 	float smoothingFunc(float r, float d) {
-		float volume = PI * pow(r, 8) / 4.0f;
-		float v = std::max(0.0f, r * r - d * d);
-		return v * v * v / volume;
+		if (d >= r) return 0;
+		float volume = (PI * pow(r, 4)) / 6;
+		return (r - d) * (r - d) / volume;
 	}
 
 	float smoothingFuncDerivative(float r, float d) {
 		if (d >= r) return 0;
-		float f = r * r - d * d;
-		float scale = -24 / (PI * pow(r, 8));
-		return scale * d * f * f;
+		float scale = 12 / (pow(r, 4) * PI);
+		return (d - r) * scale;
 	}
 
-	float calculateDensity(Vector2 samplePoint) {
+	float calculateDensity(raylib::Vector2 samplePoint) {
 		float density = 0;
 
 		for (auto pref : particles) {
@@ -117,13 +136,14 @@ struct World {
 		return density;
 	}
 
-	void calculateDensities() {
+	void calculateDensities(double dt) {
 		for (auto pref : particles) {
-			pref.get()->density = calculateDensity(pref.get()->pos);
+			// Use future predicted position when computing density
+			pref.get()->density = calculateDensity(pref.get()->pos + pref.get()->vel * dt);
 		}
 	}
 
-	float calculateProperty(Vector2 samplePoint, std::function<float(const std::shared_ptr<Particle>)> propertySelector) {
+	float calculateProperty(raylib::Vector2 samplePoint, std::function<float(const std::shared_ptr<Particle>)> propertySelector) {
 		float prop = 0;
 
 		for (auto pref : particles) {
@@ -136,25 +156,64 @@ struct World {
 		return prop;
 	}
 
-	Vector2 calculatePropertyGradient(Vector2 samplePoint, std::function<float(const std::shared_ptr<Particle>)> propertySelector) {
-		Vector2 propGrad{};
+	raylib::Vector2 calculatePropertyGradient(raylib::Vector2 samplePoint, std::function<float(const std::shared_ptr<Particle>)> propertySelector) {
+		raylib::Vector2 propGrad{};
 
 		for (auto pref : particles) {
 			float dst = Vector2Distance(samplePoint, pref.get()->pos);
-			Vector2 dir = Vector2Scale(Vector2Subtract(samplePoint, pref.get()->pos), 1/dst);
+			raylib::Vector2 dir = (samplePoint - pref.get()->pos) / dst;
 			float slope = smoothingFuncDerivative(Config::particleSmoothingRadius, dst);
 			float density = pref.get()->density;
-			propGrad.x += dir.x * propertySelector(pref) * pref.get()->mass / density * slope;
-			propGrad.y += dir.y * propertySelector(pref) * pref.get()->mass / density * slope;
+			propGrad += dir * propertySelector(pref) * pref.get()->mass / density * slope;
 		}
 
 		return propGrad;
 	}
 
 	float calculatePressure(float density) {
-		float densityE = density - Config::TARGET_DENSITY;
+		float densityE = density - Config::targetDensity;
 		float pressure = densityE * Config::PRESSURE_FORCE;
 		return pressure;
+	}
+
+	float calculateSharedPressure(float densityA, float densityB) {
+		return (calculatePressure(densityA) + calculatePressure(densityB)) / 2.0f;
+	}
+
+	raylib::Vector2 calculatePressureForce(raylib::Vector2 samplePoint) {
+		raylib::Vector2 force;
+
+		for (auto pref : particles) {
+			if (pref.get()->pos == samplePoint) continue;
+
+			raylib::Vector2 offset = samplePoint - pref.get()->pos;
+			float dst = offset.Length();
+			raylib::Vector2 dir = dst == 0 ? raylib::Vector2{ 1, 0 } : offset.Normalize();
+			float slope = smoothingFuncDerivative(Config::particleSmoothingRadius, dst);
+			float density = pref.get()->density;
+			float sharedPressure = calculateSharedPressure(density, calculateDensity(samplePoint));
+			force += -dir * sharedPressure * pref.get()->mass / density * slope;
+		}
+
+		return force;
+	}
+
+	raylib::Vector2 calculateParticlePressure(std::shared_ptr<Particle> particle) {
+		raylib::Vector2 force;
+
+		for (auto pref : particles) {
+			if (pref == particle) continue;
+
+			raylib::Vector2 offset = particle.get()->pos - pref.get()->pos;
+			float dst = offset.Length();
+			raylib::Vector2 dir = dst == 0 ? raylib::Vector2{ 1, 0 } : offset.Normalize();
+			float slope = smoothingFuncDerivative(Config::particleSmoothingRadius, dst);
+			float density = pref.get()->density;
+			float sharedPressure = calculateSharedPressure(particle.get()->density, density);
+			force += -dir * sharedPressure * pref.get()->mass / density * slope;
+		}
+
+		return force;
 	}
 };
 
@@ -191,12 +250,9 @@ struct Application {
 	}
 
 	void run() {
-		world.calculateDensities();
-
-		float maxDensity = -1;
-		for (auto pref : world.particles) {
-			maxDensity = std::max(maxDensity, pref.get()->density);
-		}
+		
+		Config::targetDensity = world.particles.size() / (world.bbox.width * world.bbox.height);
+		printf("Set target density to %f", Config::targetDensity);
 
 		while (!WindowShouldClose()) {
 			BeginDrawing();
@@ -204,11 +260,14 @@ struct Application {
 
 			// Input
 			if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-				world.spawn(GetMouseX(), GetMouseY());
+				world.spawn(raylib::Mouse::GetX(), raylib::Mouse::GetY());
 			}
 
-			Config::particleSmoothingRadius += GetMouseWheelMove() * 3;
-			Config::particleSmoothingRadius = Clamp(Config::particleSmoothingRadius, 1.0f, 200.0f);
+			float wheelMove = raylib::Mouse::GetWheelMove();
+			if (wheelMove != 0.0f) {
+				Config::targetDensity += Config::targetDensity * wheelMove * 0.1f;
+				Config::targetDensity = Clamp(Config::targetDensity, 0.00001f, 10.0f);
+			}
 
 			// Update
 			world.update(GetFrameTime());
@@ -216,29 +275,35 @@ struct Application {
 			// Draw
 			
 			// Draw properties
-			int stepX = Config::WIDTH / 100;
-			int stepY = Config::HEIGHT / 100;
-			for (int i = 0; i < Config::WIDTH; i += stepX) {
-				for (int j = 0; j < Config::HEIGHT; j += stepY) {
-					float density = world.calculateDensity({ i + stepX/2.0f, j + stepY/2.0f });
+			//float stepX = Config::WIDTH / 100.0f;
+			//float stepY = Config::HEIGHT / 100.0f;
+			//for (float i = world.bbox.x; i < world.bbox.x + world.bbox.width; i += stepX) {
+			//	for (float j = world.bbox.y; j < world.bbox.y + world.bbox.height; j += stepY) {
+			//		float density = world.calculateDensity({ i + stepX/2.0f, j + stepY/2.0f });
+			//		float pressure = world.calculatePressure(density);
 
-					unsigned char vis = std::min(density * 400000, 255.0f);
-
-					DrawRectangle(i, j, stepX, stepY, { 0, 0, vis, 128 });
-				}
-			}
+			//		if (pressure < 0) {
+			//			unsigned char vis = std::min(-pressure * 1000, 255.0f);
+			//			DrawRectangle(i, j, stepX, stepY, { 0, 0, vis, 128 });
+			//		}
+			//		else {
+			//			unsigned char vis = std::min(pressure * 1000, 255.0f);
+			//			DrawRectangle(i, j, stepX, stepY, { vis, 0, 0, 128 });
+			//		}
+			//	}
+			//}
 
 			for (auto p : world.particles) {
 				DrawCircleV(p.get()->pos, Config::PARTICLE_SIZE, WHITE);
 			}
 
 			// Draw boundary
-			DrawRectangleLines(world.bbox.x, world.bbox.y, world.bbox.width, world.bbox.height, GREEN);
+			world.bbox.DrawLines(GREEN);
 
-			// Vector2 mousePos = GetMousePosition();
-			// Vector2 propGrad = world.calculatePropertyGradient(mousePos, [](std::shared_ptr<Particle> p) { return p.get()->mass; });
-			// DrawText(TextFormat("Property grad at mouse: %f, %f", propGrad.x, propGrad.y), 10, 10, 24, WHITE);
-			// DrawCircleLinesV(mousePos, Config::particleSmoothingRadius, WHITE);
+			Vector2 mousePos = GetMousePosition();
+			float density = world.calculateDensity(mousePos);
+			float pressure = world.calculatePressure(density);
+			DrawText(TextFormat("Target Density: %f\tDensity: %f\tPressure: %f", Config::targetDensity, density, pressure), 10, 10, 24, WHITE);
 
 			EndDrawing();
 		}
@@ -251,6 +316,6 @@ int main(int argc, char** argv) {
 	Application app;
 	// app.createWorld(10);
 
-	app.createRandomWorld(500);
+	app.createRandomWorld(300);
 	app.run();
 }
