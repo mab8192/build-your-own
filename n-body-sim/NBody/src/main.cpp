@@ -2,6 +2,9 @@
 #include "common.h"
 #include "rlgl.h"
 
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
+
 #include <iostream>
 #include <vector>
 
@@ -77,8 +80,6 @@ class Version2 : public Driver
 public:
 	Version2() : Driver() 
 	{
-		DisableCursor();
-
 		// Set up camera
 		m_Camera = { 0 };
 		m_Camera.position = Vector3{ 100, 500, 100 };		// Camera position
@@ -167,14 +168,6 @@ public:
 		if (IsKeyPressed(KEY_SPACE))
 		{
 			m_isPaused = !m_isPaused;
-			if (m_isPaused)
-			{
-				EnableCursor();
-			}
-			else
-			{
-				DisableCursor();
-			}
 		}
 
 		if (IsKeyPressed(KEY_P))
@@ -182,7 +175,10 @@ public:
 			m_isDebug = !m_isDebug;
 		}
 
-		UpdateCamera();
+		if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
+		{
+			UpdateCamera();
+		}
 	}
 
 	void FixedUpdate(double dt) override
@@ -265,6 +261,8 @@ public:
 			}
 
 			DrawText(TextFormat("Number of bodies: %i", m_Bodies.size()), 100, 10, 20, DARKGREEN);
+
+			GuiButton({ 100, 100, 130, 30 }, "Test");
 
 		EndDrawing();
 	}
