@@ -26,11 +26,11 @@ void Driver::RunPhysics()
         if (!m_isPaused)
         {
             timeAccumulator += dt;
-            while (timeAccumulator >= SIM_TIME_STEP)
+            while (timeAccumulator >= m_SimTimeStep)
             {
                 std::lock_guard<std::mutex> lock(m_Mutex);
-                FixedUpdate(SIM_TIME_STEP);
-                timeAccumulator -= SIM_TIME_STEP;
+                FixedUpdate(m_SimTimeStep * m_TimeScale);
+                timeAccumulator -= m_SimTimeStep;
             }
         }
         else
@@ -57,5 +57,10 @@ void Driver::Run()
 
 	m_ShouldClose = true;
 	physicsThread.join();
+}
+
+void Driver::setPhysicsTimeStep(float newTimeStep)
+{
+    m_SimTimeStep = newTimeStep;
 }
 // end of Driver.cpp

@@ -21,12 +21,18 @@
     <ClInclude Include="src\Driver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Controls.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Controls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

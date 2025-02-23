@@ -1,5 +1,6 @@
 #include "Driver.h"
 #include "common.h"
+#include "Controls.h"
 #include "rlgl.h"
 
 #define RAYGUI_IMPLEMENTATION
@@ -7,10 +8,6 @@
 
 #include <iostream>
 #include <vector>
-
-const float mouseSensitivity = 0.005f;
-
-const bool CAMERA_ORBIT_MODE = true;
 
 struct Body
 {
@@ -22,22 +19,6 @@ struct Body
 	Color color = WHITE;
 	bool deleted = false;
 };
-
-void SetCustomProjectionMatrix(Camera camera, float far) {
-	float aspect = (float)GetScreenWidth() / (float)GetScreenHeight();
-	float fovy = camera.fovy;
-	float near = RL_CULL_DISTANCE_NEAR;
-
-	float top = tanf(fovy * 0.5f) * near;
-	float bottom = -top;
-	float right = aspect * top;
-	float left = -right;
-
-	rlMatrixMode(RL_PROJECTION);
-	rlLoadIdentity();
-	rlFrustum(left, right, bottom, top, near, far);
-	rlMatrixMode(RL_MODELVIEW);
-}
 
 void resolveCollision(Body& b1, Body& b2)
 {
@@ -60,7 +41,6 @@ void resolveCollision(Body& b1, Body& b2)
 			Vector3 impulse = Vector3Scale(norm, j);
 			b1.vel = Vector3Subtract(b1.vel, Vector3Scale(impulse, 1 / b1.mass));
 			b2.vel = Vector3Add(b2.vel, Vector3Scale(impulse, 1 / b2.mass));
-
 		}
 
 		// Separate the bodies immediately
@@ -105,64 +85,6 @@ public:
 		}
 	}
 
-	void UpdateCamera()
-	{
-		Vector2 mousePositionDelta = GetMouseDelta();
-
-		double angleX = -mousePositionDelta.x * mouseSensitivity;
-		double angleY = -mousePositionDelta.y * mouseSensitivity;
-
-		// Rotation axis
-		Vector3 up = m_Camera.up;
-
-		// View vector
-		Vector3 targetPosition = Vector3Subtract(m_Camera.target, m_Camera.position);
-
-		// Rotate view vector around up axis
-		targetPosition = Vector3RotateByAxisAngle(targetPosition, up, angleX);
-
-		// Move position relative to target
-		if (CAMERA_ORBIT_MODE)
-		{
-			// Move position relative to target
-			m_Camera.position = Vector3Subtract(m_Camera.target, targetPosition);
-		}
-		else // rotate around camera.position
-		{
-			// Move target relative to position
-			m_Camera.target = Vector3Add(m_Camera.position, targetPosition);
-		}
-
-		// Rotation axis
-		Vector3 right = Vector3CrossProduct(targetPosition, up);
-
-		// Clamp view up
-		float maxAngleUp = Vector3Angle(up, targetPosition);
-		maxAngleUp -= 0.001f; // avoid numerical errors
-		if (angleY > maxAngleUp) angleY = maxAngleUp;
-
-		// Clamp view down
-		float maxAngleDown = Vector3Angle(Vector3Negate(up), targetPosition);
-		maxAngleDown *= -1.0f; // downwards angle is negative
-		maxAngleDown += 0.001f; // avoid numerical errors
-		if (angleY < maxAngleDown) angleY = maxAngleDown;
-		
-		// Rotate view vector around right axis
-		targetPosition = Vector3RotateByAxisAngle(targetPosition, right, angleY);
-
-		// Move position relative to target
-		if (CAMERA_ORBIT_MODE)
-		{
-			// Move position relative to target
-			m_Camera.position = Vector3Subtract(m_Camera.target, targetPosition);
-		}
-		else // rotate around camera.position
-		{
-			// Move target relative to position
-			m_Camera.target = Vector3Add(m_Camera.position, targetPosition);
-		}
-	}
-
 	void ProcessInputs() override
 	{
 		if (IsKeyPressed(KEY_SPACE))
@@ -175,9 +97,14 @@ public:
 			m_isDebug = !m_isDebug;
 		}
 
+		if (IsMouseButtonDown(MOUSE_BUTTON_MIDDLE))
+		{
+			FPCamera(m_Camera);
+		}
+
 		if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON))
 		{
-			UpdateCamera();
+			OrbitCamera(m_Camera);
 		}
 	}
 
@@ -227,7 +154,7 @@ public:
 		std::erase_if(m_Bodies, [](const Body& body) { return body.deleted; });
 	}
 
-	void Draw() const override
+	void Draw() override
 	{
 		BeginDrawing();
 			ClearBackground(BLACK);
@@ -262,7 +189,8 @@ public:
 
 			DrawText(TextFormat("Number of bodies: %i", m_Bodies.size()), 100, 10, 20, DARKGREEN);
 
-			GuiButton({ 100, 100, 130, 30 }, "Test");
+			DrawText(TextFormat("Time scale: %f", m_TimeScale), 100, 130, 16, WHITE);
+			GuiSliderBar({ 100, 150, 120, 10 }, "", "", &m_TimeScale, 0.5f, 4.0f);
 
 		EndDrawing();
 	}

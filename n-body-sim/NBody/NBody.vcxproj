@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClInclude Include="src\common.h" />
     <ClInclude Include="src\Driver.h" />
+    <ClInclude Include="src\Controls.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Driver.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Controls.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
