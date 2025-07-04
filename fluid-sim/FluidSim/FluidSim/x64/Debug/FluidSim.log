@@ -1,0 +1,15 @@
+﻿  main.cpp
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(107,81): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(107,78): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(107,60): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(107,53): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(107,44): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(107,33): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(130,23): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(146,49): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(146,38): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(157,53): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(157,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(173,95): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\main.cpp(173,78): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  FluidSim.vcxproj -> C:\dev\mab8192\build-your-own\fluid-sim\FluidSim\x64\Debug\FluidSim.exe

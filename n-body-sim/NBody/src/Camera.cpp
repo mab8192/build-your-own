@@ -1,13 +1,7 @@
-#include "Controls.h"
+#include "Camera.h"
 
 #include "rlgl.h";
 #include "raymath.h"
-
-namespace ControlSettings
-{
-	static float mouseSensitivity = 0.005f;
-	static bool cameraOrbitMode = true;
-}
 
 void SetMouseSensitivity(float sens)
 {
@@ -19,7 +13,8 @@ void SetCameraOrbit(bool orbit)
 	ControlSettings::cameraOrbitMode = orbit;
 }
 
-void SetCustomProjectionMatrix(Camera camera, float far) {
+void SetCustomProjectionMatrix(Camera camera, float far) 
+{
 	float aspect = (float)GetScreenWidth() / (float)GetScreenHeight();
 	float fovy = camera.fovy;
 	float near = RL_CULL_DISTANCE_NEAR;
