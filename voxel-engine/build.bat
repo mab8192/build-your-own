@@ -15,4 +15,3 @@ cmake --build . --config Release
 
 echo Build complete!
 echo Executable is located in: build\bin\VoxelEngine.exe
-pause 
