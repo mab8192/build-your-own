@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\aa6618a7de536c5a910346a71b012472\raylib-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\aa6618a7de536c5a910346a71b012472\raylib-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\aa6618a7de536c5a910346a71b012472\raylib-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\aa6618a7de536c5a910346a71b012472\raylib-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\aa6618a7de536c5a910346a71b012472\raylib-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\aa6618a7de536c5a910346a71b012472\raylib-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\aa6618a7de536c5a910346a71b012472\raylib-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\aa6618a7de536c5a910346a71b012472\raylib-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\6f79462c14c64515aa9d0c17459d0c86\raylib-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\0bf372e8d5a5d628858c1b8a0319094a\raylib-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\raylib-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{42CE649C-8E86-3E4B-A875-577FD6686F7E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

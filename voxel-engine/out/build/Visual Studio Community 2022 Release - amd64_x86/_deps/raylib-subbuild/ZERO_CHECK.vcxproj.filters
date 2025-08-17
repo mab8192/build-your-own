@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\dev\mab8192\build-your-own\voxel-engine\out\build\Visual Studio Community 2022 Release - amd64_x86\_deps\raylib-subbuild\CMakeFiles\0bf372e8d5a5d628858c1b8a0319094a\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{42CE649C-8E86-3E4B-A875-577FD6686F7E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

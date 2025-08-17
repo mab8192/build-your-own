@@ -1,0 +1,14 @@
+# Target labels
+ raylib-populate
+# Source files and their labels
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/raylib-populate
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/0bf372e8d5a5d628858c1b8a0319094a/raylib-populate.rule
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/6f79462c14c64515aa9d0c17459d0c86/raylib-populate-complete.rule
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/aa6618a7de536c5a910346a71b012472/raylib-populate-build.rule
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/aa6618a7de536c5a910346a71b012472/raylib-populate-configure.rule
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/aa6618a7de536c5a910346a71b012472/raylib-populate-download.rule
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/aa6618a7de536c5a910346a71b012472/raylib-populate-install.rule
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/aa6618a7de536c5a910346a71b012472/raylib-populate-mkdir.rule
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/aa6618a7de536c5a910346a71b012472/raylib-populate-patch.rule
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/aa6618a7de536c5a910346a71b012472/raylib-populate-test.rule
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/_deps/raylib-subbuild/CMakeFiles/aa6618a7de536c5a910346a71b012472/raylib-populate-update.rule

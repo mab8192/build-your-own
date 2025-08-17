@@ -1,0 +1,3 @@
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/CMakeFiles/VoxelEngine.dir
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/CMakeFiles/ALL_BUILD.dir
+C:/dev/mab8192/build-your-own/voxel-engine/out/build/Visual Studio Community 2022 Release - amd64_x86/CMakeFiles/ZERO_CHECK.dir
