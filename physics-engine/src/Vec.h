@@ -32,6 +32,7 @@ public:
     }
     double dot(const Vec2& v) const { return x * v.x + y * v.y; }
     double cross(const Vec2& v) const { return x * v.y - y * v.x; }
+    Vec2 hadamard(const Vec2& v) const { return Vec2(x * v.x, y * v.y); }
 
     Vector2 toRaylib() const { return Vector2{ static_cast<float>(x), static_cast<float>(y) }; }
 };
