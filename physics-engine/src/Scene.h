@@ -15,15 +15,4 @@ public:
     void addObject(const RigidBody2D& e);
     void update(double dt);
     void handleCollisions();
-
-private:
-    struct pair_hash {
-        std::size_t operator()(const std::pair<int, int>& p) const {
-            return std::hash<int>()(p.first) ^ (std::hash<int>()(p.second) << 1);
-        }
-    };
-
-    std::pair<int, int> getCell(const Vec2& pos) const {
-        return { static_cast<int>(pos.x / cellSize), static_cast<int>(pos.y / cellSize) };
-    }
 };

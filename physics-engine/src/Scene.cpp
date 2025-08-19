@@ -15,20 +15,10 @@ void Scene::update(double dt) {
 }
 
 void Scene::handleCollisions() {
-	// Spatial hash: map from cell coordinate to indices of bodies in that cell
-	std::unordered_map<std::pair<int, int>, std::vector<int>, Scene::pair_hash> grid;
-	for (int i = 0; i < bodies.size(); ++i) {
-		auto cell = getCell(bodies[i].transform.position);
-		grid[cell].push_back(i);
-	}
-
-	// Check collisions within each cell
-	for (const auto& entry : grid) {
-		const auto& indices = entry.second;
-		for (size_t i = 0; i < indices.size(); ++i) {
-			for (size_t j = i + 1; j < indices.size(); ++j) {
-				resolveCollision(bodies[indices[i]], bodies[indices[j]]);
-			}
+	for (size_t i = 0; i < bodies.size() - 1; ++i) {
+		for (size_t j = i + 1; j < bodies.size(); ++j) {
+			if (!bodies[i].kinematic && !bodies[j].kinematic) continue;
+			resolveCollision(bodies[i], bodies[j]);
 		}
 	}
 }

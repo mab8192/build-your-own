@@ -21,3 +21,6 @@ Thumbs.db
 # Logs and temporary files
 *.log
 *.tmp
+
+# Re-add .vscode folder for launch and settings configs
+!.vscode/

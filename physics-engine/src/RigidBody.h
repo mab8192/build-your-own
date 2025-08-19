@@ -4,6 +4,7 @@
 #include "Vec.h"
 #include "Transform.h"
 
+// Default Shapes
 const double SQUARE_VERTICES[] = {
     -0.5, -0.5,
     -0.5,  0.5,
@@ -27,7 +28,7 @@ struct RigidBody2D
     double mass = 1.0;
     Transform2D transform;
     Vec2 vel, acc;
-    bool kinematic = true; // If true, the body is kinematic and will not be affected by forces
+    bool kinematic = true; // If true, the body is kinematic and will experience force, update position/velocity, etc.
 
     Color color = WHITE;
     
