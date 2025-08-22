@@ -10,7 +10,7 @@
 int main() {
     const int screenWidth = 1600;
     const int screenHeight = 900;
-    const float resolution = 100; // Pixels per unit
+    const float resolution = 120; // Pixels per unit
 
     Vec2 origin = Vec2(screenWidth / 2.0f, screenHeight / 2.0f);
 
@@ -55,20 +55,50 @@ int main() {
         .setMass(1.0)
         .setColor(GRAY));
 
+    // Ramp
+    scene.addObject(RigidBody2D()
+        .setKinematic(false)
+        .addVertex(Vec2(-2, -0.1))
+        .addVertex(Vec2(1, 1))
+        .addVertex(Vec2(1, -0.1))
+        .setPosition(Vec2(2, -1))
+        .setMass(1.0)
+        .setColor(GRAY));
+
     // Squares
     scene.addObject(RigidBody2D()
         .setShape(Shape::SQUARE)
         .setMass(5.0)
         .setPosition(Vec2(-3, 0))
-        .setVel(Vec2(1, 0))
+        .setVel(Vec2(3, 1))
         .setColor(BLUE));
 
     scene.addObject(RigidBody2D()
         .setShape(Shape::SQUARE)
-        .setMass(5.0)
+        .setMass(2.0)
         .setPosition(Vec2(-1, 0))
-        .setVel(Vec2(-1, 0))
+        .setVel(Vec2(1, -2))
         .setColor(RED));
+
+    scene.addObject(RigidBody2D()
+        .setShape(Shape::SQUARE)
+        .setMass(3.0)
+        .setPosition(Vec2(3, -1))
+        .setVel(Vec2(-1, -2))
+        .setColor(GREEN));
+
+    scene.addObject(RigidBody2D()
+        .setShape(Shape::SQUARE)
+        .setMass(20.0)
+        .setPosition(Vec2(0, 1))
+        .setVel(Vec2(0, -2))
+        .setColor(YELLOW));
+
+    scene.addObject(RigidBody2D()
+        .setShape(Shape::CIRCLE)
+        .setScale(Vec2(2, 1))
+        .setColor(WHITE));
+
 
     while (!WindowShouldClose()) {
         // Update
@@ -79,6 +109,18 @@ int main() {
         ClearBackground(BLACK);
 
         for (auto& e : scene.bodies) {
+            if (e.isCircle) {
+                Vec2 screenPos = Vec2(origin.x + e.transform.position.x * resolution, origin.y - e.transform.position.y * resolution);
+                DrawEllipse(
+                    static_cast<int>(screenPos.x),
+                    static_cast<int>(screenPos.y),
+                    static_cast<int>(0.5 * e.transform.scale.x * resolution),
+                    static_cast<int>(0.5 * e.transform.scale.y * resolution),
+                    e.color
+                );
+                continue;
+            }
+
             // Since +y in the world is up, need to flip the order of vertices so the triangles are rendered clockwise
             std::vector<Vector2> vertices;
             for (int i = e.vertices.size() - 1; i >= 0; i--) {

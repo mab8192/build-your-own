@@ -20,7 +20,8 @@ const double TRIANGLE_VERTICES[] = {
 
 enum Shape {
     SQUARE,
-    TRIANGLE
+    TRIANGLE,
+    CIRCLE,
 };
 
 struct RigidBody2D
@@ -30,22 +31,28 @@ struct RigidBody2D
     Vec2 vel, acc;
     bool kinematic = true; // If true, the body is kinematic and will experience force, update position/velocity, etc.
 
+    double dynamicFriction = 0.03;
+    double staticFriction = 0.05;
+
+    bool isCircle = false;
     Color color = WHITE;
     
     std::vector<Vec2> vertices; // Polygon vertices in local space
 
     RigidBody2D();
 
-    RigidBody2D& setMass(double m);
-    RigidBody2D& setTransform(const Transform2D& t);
-    RigidBody2D& setPosition(const Vec2& p);
-    RigidBody2D& setRotation(double r);
-    RigidBody2D& setScale(const Vec2& s);
-    RigidBody2D& setKinematic(bool k);
-    RigidBody2D& setVel(const Vec2& v);
-    RigidBody2D& acceleration(const Vec2& a);
-    RigidBody2D& setColor(const Color& c);
-    RigidBody2D& addVertex(const Vec2& v);
+    RigidBody2D& setMass(double m) { mass = m; return *this; }
+    RigidBody2D& setTransform(const Transform2D& t) { transform = t; return *this; }
+    RigidBody2D& setPosition(const Vec2& p) { transform.position = p; return *this; }
+    RigidBody2D& setRotation(double r) { transform.rotation = r; return *this; }
+    RigidBody2D& setScale(const Vec2& s) { transform.scale = s; return *this; }
+    RigidBody2D& setKinematic(bool k) { kinematic = k; return *this; }
+    RigidBody2D& setVel(const Vec2& v) { vel = v; return *this; }
+    RigidBody2D& setDynamicFriction(double f) { dynamicFriction = f; return *this; }
+    RigidBody2D& setStaticFriction(double f) { staticFriction = f; return *this; }
+    RigidBody2D& setColor(const Color& c) { color = c; return *this; }
+    RigidBody2D& addVertex(const Vec2& v) { vertices.push_back(v); return *this; }
+
     RigidBody2D& addVertices(const std::vector<Vec2>& vs);
     RigidBody2D& setVertices(const std::vector<Vec2>& vs);
     RigidBody2D& setVertices(const double* vs, size_t count);

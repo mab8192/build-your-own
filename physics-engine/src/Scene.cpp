@@ -9,6 +9,7 @@ void Scene::addObject(const RigidBody2D& e) {
 
 void Scene::update(double dt) {
 	for (auto& e : bodies) {
+		e.applyForce(Vec2(0, -4) * e.mass); // Gravity
 		e.update(dt);
 	}
 	handleCollisions();

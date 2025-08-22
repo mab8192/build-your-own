@@ -2,16 +2,6 @@
 
 RigidBody2D::RigidBody2D() {}
 
-RigidBody2D& RigidBody2D::setMass(double m) { mass = m; return *this; }
-RigidBody2D& RigidBody2D::setTransform(const Transform2D& t) { transform = t; return *this; }
-RigidBody2D& RigidBody2D::setPosition(const Vec2& p) { transform.position = p; return *this; }
-RigidBody2D& RigidBody2D::setRotation(double r) { transform.rotation = r; return *this; }
-RigidBody2D& RigidBody2D::setScale(const Vec2& s) { transform.scale = s; return *this; }
-RigidBody2D& RigidBody2D::setKinematic(bool k) { kinematic = k; return *this; }
-RigidBody2D& RigidBody2D::setVel(const Vec2& v) { vel = v; return *this; }
-RigidBody2D& RigidBody2D::acceleration(const Vec2& a) { acc = a; return *this; }
-RigidBody2D& RigidBody2D::setColor(const Color& c) { color = c; return *this; }
-RigidBody2D& RigidBody2D::addVertex(const Vec2& v) { vertices.push_back(v); return *this; }
 RigidBody2D& RigidBody2D::addVertices(const std::vector<Vec2>& vs) {
 	vertices.insert(vertices.end(), vs.begin(), vs.end());
 	return *this;
@@ -34,6 +24,9 @@ RigidBody2D& RigidBody2D::setShape(Shape shape) {
 			return setVertices(SQUARE_VERTICES, sizeof(SQUARE_VERTICES) / sizeof(SQUARE_VERTICES[0]));
 		case TRIANGLE:
 			return setVertices(TRIANGLE_VERTICES, sizeof(TRIANGLE_VERTICES) / sizeof(TRIANGLE_VERTICES[0]));
+		case CIRCLE:
+			isCircle = true;
+			return *this;
 	}
 	return *this;
 }
