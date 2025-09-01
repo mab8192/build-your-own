@@ -1,7 +1,10 @@
+
 #pragma once
 #include <cmath>
 #include "raylib.h"
 #include <iostream>
+
+namespace Physics {
 
 class Vec2 {
 public:
@@ -10,7 +13,7 @@ public:
     Vec2() : x(0), y(0) {}
     Vec2(double x, double y) : x(x), y(y) {}
 
-    // Arithmetic operators
+    Vec2 operator-() const { return Vec2(-x, -y); }
     Vec2 operator+(const Vec2& v) const { return Vec2(x + v.x, y + v.y); }
     Vec2 operator-(const Vec2& v) const { return Vec2(x - v.x, y - v.y); }
     Vec2 operator*(double s) const { return Vec2(x * s, y * s); }
@@ -30,6 +33,7 @@ public:
         double len = length();
         return len > 0 ? *this / len : Vec2();
     }
+    Vec2 perpendicular() const { return Vec2(-y, x); }
     double dot(const Vec2& v) const { return x * v.x + y * v.y; }
     double cross(const Vec2& v) const { return x * v.y - y * v.x; }
     Vec2 hadamard(const Vec2& v) const { return Vec2(x * v.x, y * v.y); }
@@ -44,7 +48,6 @@ public:
     Vec3() : x(0), y(0), z(0) {}
     Vec3(double x, double y, double z) : x(x), y(y), z(z) {}
 
-    // Arithmetic operators
     Vec3 operator+(const Vec3& v) const { return Vec3(x + v.x, y + v.y, z + v.z); }
     Vec3 operator-(const Vec3& v) const { return Vec3(x - v.x, y - v.y, z - v.z); }
     Vec3 operator*(double s) const { return Vec3(x * s, y * s, z * s); }
@@ -75,3 +78,5 @@ public:
 
     Vector3 toRaylib() const { return Vector3{ static_cast<float>(x), static_cast<float>(y), static_cast<float>(z) }; }
 };
+
+} // namespace Physics

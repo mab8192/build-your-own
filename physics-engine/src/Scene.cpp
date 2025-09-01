@@ -1,15 +1,17 @@
 #include "Scene.h"
 #include "Collision.h"
 
+using namespace Physics;
+
 Scene::Scene(double cellSize) : cellSize(cellSize) {}
 
-void Scene::addObject(const RigidBody2D& e) {
+void Scene::addObject(const RigidBody& e) {
 	bodies.push_back(e);
 }
 
 void Scene::update(double dt) {
 	for (auto& e : bodies) {
-		e.applyForce(Vec2(0, -4) * e.mass); // Gravity
+		e.applyForce(Vec2(0, -4) * e.mass, e.transform.position); // Gravity
 		e.update(dt);
 	}
 	handleCollisions();

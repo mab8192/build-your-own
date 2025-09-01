@@ -6,6 +6,7 @@
 #include "RigidBody.h"
 #include "Scene.h"
 
+using namespace Physics;
 
 int main() {
     const int screenWidth = 1600;
@@ -19,86 +20,37 @@ int main() {
 
     Scene scene(1.0);
 
-    // top
-    scene.addObject(RigidBody2D()
-        .setKinematic(false)
+    // Box around the whole scene
+    scene.addObject(RigidBody()
         .setShape(Shape::SQUARE)
-        .setPosition(Vec2(0, 3))
-        .setScale(Vec2(10, 0.2))
-        .setMass(1.0)
-        .setColor(GRAY));
+        .setPosition(Vec2(0, -4))
+        .setScale(Vec2(20, 1))
+        .setKinematic(false));
 
-    // bottom
-    scene.addObject(RigidBody2D()
-        .setKinematic(false)
+    scene.addObject(RigidBody()
         .setShape(Shape::SQUARE)
-        .setPosition(Vec2(0, -3))
-        .setScale(Vec2(10, 0.2))
-        .setMass(1.0)
-        .setColor(GRAY));
+        .setPosition(Vec2(6, 0))
+        .setScale(Vec2(1, 20))
+        .setKinematic(false));
 
-    // left
-    scene.addObject(RigidBody2D()
-        .setKinematic(false)
+    scene.addObject(RigidBody()
         .setShape(Shape::SQUARE)
-        .setPosition(Vec2(-5, 0))
-        .setScale(Vec2(0.2, 6))
-        .setMass(1.0)
-        .setColor(GRAY));
+        .setPosition(Vec2(-6, 0))
+        .setScale(Vec2(1, 20))
+        .setKinematic(false));
 
-    // right
-    scene.addObject(RigidBody2D()
-        .setKinematic(false)
+    scene.addObject(RigidBody()
         .setShape(Shape::SQUARE)
-        .setPosition(Vec2(5, 0))
-        .setScale(Vec2(0.2, 6))
         .setMass(1.0)
-        .setColor(GRAY));
-
-    // Ramp
-    scene.addObject(RigidBody2D()
-        .setKinematic(false)
-        .addVertex(Vec2(-2, -0.1))
-        .addVertex(Vec2(1, 1))
-        .addVertex(Vec2(1, -0.1))
-        .setPosition(Vec2(2, -1))
-        .setMass(1.0)
-        .setColor(GRAY));
-
-    // Squares
-    scene.addObject(RigidBody2D()
-        .setShape(Shape::SQUARE)
-        .setMass(5.0)
-        .setPosition(Vec2(-3, 0))
-        .setVel(Vec2(3, 1))
+        // .setRotation(-0.2)
+        .setVel(Vec2(0, -1))
         .setColor(BLUE));
 
-    scene.addObject(RigidBody2D()
+    scene.addObject(RigidBody()
         .setShape(Shape::SQUARE)
-        .setMass(2.0)
-        .setPosition(Vec2(-1, 0))
-        .setVel(Vec2(1, -2))
-        .setColor(RED));
-
-    scene.addObject(RigidBody2D()
-        .setShape(Shape::SQUARE)
-        .setMass(3.0)
-        .setPosition(Vec2(3, -1))
-        .setVel(Vec2(-1, -2))
-        .setColor(GREEN));
-
-    scene.addObject(RigidBody2D()
-        .setShape(Shape::SQUARE)
-        .setMass(20.0)
-        .setPosition(Vec2(0, 1))
-        .setVel(Vec2(0, -2))
-        .setColor(YELLOW));
-
-    scene.addObject(RigidBody2D()
-        .setShape(Shape::CIRCLE)
-        .setScale(Vec2(2, 1))
-        .setColor(WHITE));
-
+        .setPosition(Vec2(0.4, -2))
+        .setScale(Vec2(3, 0.1))
+        .setKinematic(true));
 
     while (!WindowShouldClose()) {
         // Update
@@ -116,7 +68,7 @@ int main() {
                     static_cast<int>(screenPos.y),
                     static_cast<int>(0.5 * e.transform.scale.x * resolution),
                     static_cast<int>(0.5 * e.transform.scale.y * resolution),
-                    e.color
+                    e.material.color
                 );
                 continue;
             }
@@ -130,10 +82,14 @@ int main() {
                 vertices.push_back(screenPos.toRaylib());
             }
 
+            Vec2 screenContactPoint = Vec2(origin.x + e.lastContactPoint.x * resolution, origin.y - e.lastContactPoint.y * resolution);
+            Vec2 screenImpulsePoint = screenContactPoint + e.lastImpulse * 0.1 * resolution;
+            DrawLineV(screenContactPoint.toRaylib(), screenImpulsePoint.toRaylib(), RED);
+
             DrawTriangleFan(
                 vertices.data(),
                 vertices.size(),
-                e.color
+                e.material.color
             );
         }
 

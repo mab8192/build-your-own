@@ -1,26 +1,40 @@
-#pragma once
+ #pragma once
 
 #include "RigidBody.h"
 
-void resolveCollision(RigidBody2D& a, RigidBody2D& b) {
+namespace Physics {
+
+void resolveCollision(RigidBody& a, RigidBody& b) {
     std::vector<Vec2> axes;
-
-    // Calculate SAT axes to test
+    // Calculate SAT axes to test (local edge, then rotate, then normalize)
     for (size_t i = 0; i < a.vertices.size(); ++i) {
-        Vec2 edge = a.transform.apply(a.vertices[(i + 1) % a.vertices.size()]) - a.transform.apply(a.vertices[i]);
+        Vec2 v0 = a.vertices[i];
+        Vec2 v1 = a.vertices[(i + 1) % a.vertices.size()];
+        Vec2 edge = v1 - v0;
         Vec2 axis(-edge.y, edge.x); // Perpendicular to edge
-        axes.push_back(axis.normalized());
+        // Rotate axis by body's rotation
+        double cosTheta = std::cos(a.transform.rotation);
+        double sinTheta = std::sin(a.transform.rotation);
+        Vec2 worldAxis(axis.x * cosTheta - axis.y * sinTheta, axis.x * sinTheta + axis.y * cosTheta);
+        axes.push_back(worldAxis.normalized());
     }
-
     for (size_t i = 0; i < b.vertices.size(); ++i) {
-        Vec2 edge = b.transform.apply(b.vertices[(i + 1) % b.vertices.size()]) - b.transform.apply(b.vertices[i]);
-        Vec2 axis(-edge.y, edge.x); // Perpendicular to edge
-        axes.push_back(axis.normalized());
+        Vec2 v0 = b.vertices[i];
+        Vec2 v1 = b.vertices[(i + 1) % b.vertices.size()];
+        Vec2 edge = v1 - v0;
+        Vec2 axis(-edge.y, edge.x);
+        double cosTheta = std::cos(b.transform.rotation);
+        double sinTheta = std::sin(b.transform.rotation);
+        Vec2 worldAxis(axis.x * cosTheta - axis.y * sinTheta, axis.x * sinTheta + axis.y * cosTheta);
+        axes.push_back(worldAxis.normalized());
     }
 
     // Track minimum overlap and axis
     double minOverlap = std::numeric_limits<double>::max();
+    Vec2 n;
+    double minAmin = 0, minAmax = 0, minBmin = 0, minBmax = 0;
     Vec2 minAxis;
+    bool found = false;
     for (const Vec2& axis : axes) {
         double aMin = std::numeric_limits<double>::max();
         double aMax = std::numeric_limits<double>::lowest();
@@ -36,77 +50,90 @@ void resolveCollision(RigidBody2D& a, RigidBody2D& b) {
             bMin = std::min(bMin, proj);
             bMax = std::max(bMax, proj);
         }
-        // SAT: If there is a gap, no collision
         if (aMax < bMin || bMax < aMin) {
             return; // No collision
         }
-        // Find overlap on this axis
         double overlap = std::min(aMax, bMax) - std::max(aMin, bMin);
         if (overlap < minOverlap) {
             minOverlap = overlap;
+            n = axis;
+            minAmin = aMin;
+            minAmax = aMax;
+            minBmin = bMin;
+            minBmax = bMax;
             minAxis = axis;
+            found = true;
         }
     }
-    // If we get here, collision detected. Use minAxis and minOverlap for resolution
+    if (!found) return;
 
-    // Ensure the axis points from a to b
-    Vec2 d = b.transform.position - a.transform.position;
-    if (d.dot(minAxis) < 0) minAxis = minAxis * -1.0;
+    // Find the deepest point of penetration for contact (improves torque/rotation response)
+    double maxPenetration = -std::numeric_limits<double>::max();
+    Vec2 contact(0, 0);
+    for (const Vec2& v : a.vertices) {
+        Vec2 worldV = a.transform.apply(v);
+        double proj = worldV.dot(minAxis);
+        double penetration = std::min(minAmax, minBmax) - proj;
+        if (proj >= minBmin - 1e-6 && proj <= minBmax + 1e-6 && penetration > maxPenetration) {
+            maxPenetration = penetration;
+            contact = worldV;
+        }
+    }
+    for (const Vec2& v : b.vertices) {
+        Vec2 worldV = b.transform.apply(v);
+        double proj = worldV.dot(minAxis);
+        double penetration = std::min(minAmax, minBmax) - proj;
+        if (proj >= minAmin - 1e-6 && proj <= minAmax + 1e-6 && penetration > maxPenetration) {
+            maxPenetration = penetration;
+            contact = worldV;
+        }
+    }
+    Vec2 p = contact;
+    if (maxPenetration == -std::numeric_limits<double>::max()) {
+        // Fallback: use center between shapes if no points found
+        p = (a.transform.position + b.transform.position) * 0.5;
+    }
+
+    // Ensure the normal points from a to b at the contact point
+    Vec2 ab = b.transform.position - a.transform.position;
+    if (ab.dot(n) < 0) n = n * -1.0;
 
     // Resolve collision by moving only movable (kinematic) bodies
-    if (a.kinematic && b.kinematic) {
-        // Both can move: split correction by mass
-        double totalMass = a.mass + b.mass;
-        double aMove = (b.mass / totalMass) * minOverlap;
-        double bMove = (a.mass / totalMass) * minOverlap;
-        a.transform.position -= minAxis * aMove;
-        b.transform.position += minAxis * bMove;
-    } else if (a.kinematic && !b.kinematic) {
-        // Only a can move
-        a.transform.position -= minAxis * minOverlap;
-    } else if (!a.kinematic && b.kinematic) {
-        // Only b can move
-        b.transform.position += minAxis * minOverlap;
+    double totalInvMass = (a.kinematic ? a.invMass : 0.0) + (b.kinematic ? b.invMass : 0.0);
+    if (totalInvMass > 0) {
+        double aMove = (a.kinematic ? a.invMass / totalInvMass : 0.0) * minOverlap;
+        double bMove = (b.kinematic ? b.invMass / totalInvMass : 0.0) * minOverlap;
+        if (a.kinematic) a.transform.position -= n * aMove;
+        if (b.kinematic) b.transform.position += n * bMove;
     }
-    // If both are static (not kinematic), do nothing
+    
+    // Apply impulse
+    Vec2 ra = p - a.transform.position;
+    Vec2 rb = p - b.transform.position;
+    // Relative velocity at contact
+    Vec2 va = a.vel + ra.perpendicular() * a.angularVelocity;
+    Vec2 vb = b.vel + rb.perpendicular() * b.angularVelocity;
+    Vec2 rv = vb - va;
+    double velAlongNormal = rv.dot(n);
 
-    // Apply impulse response (elastic collision, restitution = 1)
-    Vec2 relativeVelocity = b.vel - a.vel;
-    double velAlongNormal = relativeVelocity.dot(minAxis);
-    if (velAlongNormal > 0) {
-        return; // Bodies are separating, no impulse needed
-    }
+    if (velAlongNormal > 0) return; // Bodies are separating
 
-    double restitution = 0.9;
+    double e = std::min(a.material.restitution, b.material.restitution);
 
-    // Only apply impulse to kinematic (movable) bodies
-    double invMassA = a.kinematic ? (1.0 / a.mass) : 0.0;
-    double invMassB = b.kinematic ? (1.0 / b.mass) : 0.0;
-    double impulseMag = -(1.0 + restitution) * velAlongNormal / (invMassA + invMassB);
-    Vec2 impulse = minAxis * impulseMag;
-    if (a.kinematic) a.impulse(impulse * -1);
-    if (b.kinematic) b.impulse(impulse);
+    double raCrossN = ra.cross(n);
+    double rbCrossN = rb.cross(n);
 
-    // --- Friction implementation ---
-    // 1. Calculate tangent vector
-    Vec2 tangent = (relativeVelocity - minAxis * relativeVelocity.dot(minAxis)).normalized();
-    double jt = -relativeVelocity.dot(tangent) / (invMassA + invMassB);
+    double invMassSum = 0.0;
+    if (a.kinematic) invMassSum += a.invMass + (raCrossN * raCrossN) * a.invInertia;
+    if (b.kinematic) invMassSum += b.invMass + (rbCrossN * rbCrossN) * b.invInertia;
+    if (invMassSum == 0) return;
 
-    // 2. Calculate friction coefficients (combine using sqrt)
-    double staticFriction = std::sqrt(a.staticFriction * b.staticFriction);
-    double dynamicFriction = std::sqrt(a.dynamicFriction * b.dynamicFriction);
+    double j = -(1 + e) * velAlongNormal / invMassSum;
+    Vec2 impulse = n * j;
 
-    // 3. Clamp friction impulse
-    Vec2 frictionImpulse;
-    if (std::abs(jt) < impulseMag * staticFriction) {
-        // Static friction
-        frictionImpulse = tangent * jt;
-    } else {
-        // Dynamic friction
-        frictionImpulse = tangent * (-impulseMag * dynamicFriction);
-    }
-
-    // 4. Apply friction impulse
-    if (a.kinematic) a.impulse(frictionImpulse * -1);
-    if (b.kinematic) b.impulse(frictionImpulse);
+    // Apply impulse only to kinematic bodies, with correct sign
+    if (a.kinematic) a.impulse(-impulse, p);
+    if (b.kinematic) b.impulse(impulse, p);
 }
+
+} // namespace Physics
